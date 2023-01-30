@@ -4,3 +4,4 @@ resources:
   - cert-manager.yaml
   - longhorn.yaml
   - metallb.yaml
+  - weave-gitops.yaml
