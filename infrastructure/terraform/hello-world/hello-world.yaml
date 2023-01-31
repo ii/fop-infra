@@ -10,5 +10,5 @@ spec:
   approvePlan: auto
   sourceRef:
     kind: GitRepository
-    name: infra-terraform-hello-world
+    name: flux-system
     namespace: flux-system
