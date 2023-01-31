@@ -12,10 +12,10 @@ metadata:
   name: hello-world
   namespace: default
 spec:
-  path: ./infrastructure/terraform/hello-world
+  path: ./
   interval: 10m
   approvePlan: auto
   sourceRef:
     kind: GitRepository
-    name: flux-system
+    name: infra-terraform-hello-world
     namespace: flux-system
