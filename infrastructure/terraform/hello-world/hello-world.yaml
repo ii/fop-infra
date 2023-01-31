@@ -1,15 +1,39 @@
 ---
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: helloworld
+  namespace: flux-system
+spec:
+  interval: 30s
+  url: https://github.com/tf-controller/helloworld
+  ref:
+    branch: main
+---
 apiVersion: infra.contrib.fluxcd.io/v1alpha1
 kind: Terraform
 metadata:
-  name: hello-world
+  name: helloworld-tf
   namespace: flux-system
 spec:
-  path: ./infrastructure/terraform/hello-world/tf/
-  interval: 10m
-  approvePlan: auto
-  storeReadablePlan: json
+  path: ./
+  interval: 1m
   sourceRef:
     kind: GitRepository
-    name: flux-system
+    name: helloworld
     namespace: flux-system
+# ---
+# apiVersion: infra.contrib.fluxcd.io/v1alpha1
+# kind: Terraform
+# metadata:
+#   name: hello-world
+#   namespace: flux-system
+# spec:
+#   path: ./infrastructure/terraform/hello-world/tf/
+#   interval: 10m
+#   approvePlan: auto
+#   storeReadablePlan: json
+#   sourceRef:
+#     kind: GitRepository
+#     name: flux-system
+#     namespace: flux-system
