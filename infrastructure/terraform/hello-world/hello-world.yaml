@@ -1,3 +1,11 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tf-runner
+  namespace: default
+automountServiceAccountToken: false
+---
 apiVersion: infra.contrib.fluxcd.io/v1alpha1
 kind: Terraform
 metadata:
