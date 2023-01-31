@@ -8,6 +8,7 @@ spec:
   path: ./
   interval: 10m
   approvePlan: auto
+  storeReadablePlan: json
   sourceRef:
     kind: GitRepository
     name: flux-system
