@@ -5,7 +5,7 @@ metadata:
   name: hello-world
   namespace: flux-system
 spec:
-  path: ./
+  path: ./infrastructure/terraform/hello-world/tf/
   interval: 10m
   approvePlan: auto
   storeReadablePlan: json
