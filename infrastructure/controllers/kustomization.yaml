@@ -5,3 +5,4 @@ resources:
   - longhorn.yaml
   - metallb.yaml
   - weave-gitops.yaml
+  - tf-controller.yaml
