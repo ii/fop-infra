@@ -1,16 +1,9 @@
 ---
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: tf-runner
-  namespace: default
-automountServiceAccountToken: true
----
 apiVersion: infra.contrib.fluxcd.io/v1alpha1
 kind: Terraform
 metadata:
   name: hello-world
-  namespace: default
+  namespace: flux-system
 spec:
   path: ./
   interval: 10m
