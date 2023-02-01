@@ -6,3 +6,6 @@ resources:
   - metallb.yaml
   - weave-gitops.yaml
   - tf-controller.yaml
+  - ii-powerdns.yaml
+#  - openstack-powerdns.yaml
+#  - aescanero-powerdns.yaml
