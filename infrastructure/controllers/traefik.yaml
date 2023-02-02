@@ -32,6 +32,17 @@ spec:
         namespace: traefik
       interval: 12h
   values:
+    ingressRoute:
+      dashboard:
+        enabled: true
+        labels: {}
+        annotations:
+          kubernetes.io/ingress.class: cilium
+    providers:
+      kubernetesCRD:
+        enabled: true
+      kubernetesIngress:
+        enabled: true
     logs:
       general:
         level: DEBUG
