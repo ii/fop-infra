@@ -7,6 +7,7 @@ resources:
   - weave-gitops.yaml
   - tf-controller.yaml
   - external-dns.yaml
+  - traefik.yaml
 #   - ii-powerdns.yaml
 #  - openstack-powerdns.yaml
 #  - aescanero-powerdns.yaml
