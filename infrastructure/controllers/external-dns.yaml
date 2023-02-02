@@ -43,7 +43,7 @@ spec:
     provider: pdns
     clusterDomain: hackbach.cluster
     pdns:
-      apiUrl: http://auth.powerdns
+      apiUrl: http://auth.default.svc.hackbach.cluster
       apiPort: 8081
       apiKey: hackbach
       # secretName:
