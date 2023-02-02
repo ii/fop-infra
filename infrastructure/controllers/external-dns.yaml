@@ -1,0 +1,46 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: external-dns
+  labels:
+    toolkit.fluxcd.io/tenant: sre-team
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: external-dns
+  namespace: external-dns
+spec:
+  interval: 24h
+  # url: https://kubernetes-sigs.github.io/external-dns/
+  url: https://charts.bitnami.com/bitnami
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: external-dns
+  namespace: external-dns
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: external-dns
+      # version: "1.12.0" # k8s-sigs
+      version: "6.13.2" # bitnami
+      sourceRef:
+        kind: HelmRepository
+        name: external-dns
+        namespace: external-dns
+      interval: 12h
+  values:
+    crd:
+      create: true
+    txtPrefix: ii
+    provider: pdns
+    clusterDomain: hackbach.cluster
+    pdns:
+      apiUrl: auth.powerdns
+      apiPort: 8081
+      apiKey: hackbach
+      # secretName:
