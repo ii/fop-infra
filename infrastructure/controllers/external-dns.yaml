@@ -34,13 +34,26 @@ spec:
         namespace: external-dns
       interval: 12h
   values:
+    sources: "service\ningress"
     crd:
       create: true
     txtPrefix: ii
     provider: pdns
     clusterDomain: hackbach.cluster
     pdns:
-      apiUrl: auth.powerdns
+      apiUrl: http://auth.powerdns
       apiPort: 8081
       apiKey: hackbach
       # secretName:
+---
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: localhost-ii-nz
+spec:
+  endpoints:
+    - dnsName: localhost.ii.nz
+      recordTTL: 1
+      recordType: A
+      targets:
+        - 127.0.0.1
