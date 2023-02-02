@@ -38,11 +38,11 @@ spec:
         labels: {}
         annotations:
           kubernetes.io/ingress.class: cilium
-    providers:
-      kubernetesCRD:
-        enabled: true
-      kubernetesIngress:
-        enabled: true
+    # providers:
+    #   kubernetesCRD:
+    #     enabled: true
+    #   kubernetesIngress:
+    #     enabled: true
     logs:
       general:
         level: DEBUG
@@ -50,10 +50,10 @@ spec:
       access:
         level: DEBUG
         # level: ERROR
-    providers:
-      publishedService:
-        enable: false
-        # ^ could this be true?
+    # providers:
+    #   publishedService:
+    #     enable: false
+    #     # ^ could this be true?
     hostNetwork: false
     service:
       type: LoadBalancer
