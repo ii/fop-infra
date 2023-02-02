@@ -50,6 +50,7 @@ apiVersion: externaldns.k8s.io/v1alpha1
 kind: DNSEndpoint
 metadata:
   name: localhost-ii-nz
+  namespace: external-dns
 spec:
   endpoints:
     - dnsName: localhost.ii.nz
