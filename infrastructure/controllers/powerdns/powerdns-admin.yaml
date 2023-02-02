@@ -1,0 +1,65 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.1.155
+  ports:
+    - name: "powerdns-admin"
+      port: 80
+      targetPort: 80
+  selector:
+    powerdns: admin
+status:
+  loadBalancer: {}
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: powerdns-admin-data
+#   labels:
+#     powerdns: admin
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 100Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      powerdns: admin
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        powerdns: admin
+    spec:
+      containers:
+        - env:
+            - name: SECRET_KEY
+              value: "hackbach"
+            - name: SQLALCHEMY_DATABASE_URI
+              value: sqlite:////data/powerdns-admin.db
+          image: powerdnsadmin/pda-legacy:v0.3.0
+          name: admin
+          ports:
+            - containerPort: 80
+          resources: {}
+          # volumeMounts:
+          #   - mountPath: /data
+          #     name: powerdns-admin-data
+      restartPolicy: Always
+      # volumes:
+      #   - name: powerdns-admin-data
+      #     persistentVolumeClaim:
+      #       claimName: powerdns-admin-data

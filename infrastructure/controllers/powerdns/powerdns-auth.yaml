@@ -1,0 +1,92 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth
+  labels:
+    powerdns: auth
+  # annotations:
+  #   metallb.universe.tf/address-pool: default
+  #   metallb.universe.tf/allow-shared-ip: "dns"
+spec:
+  # externalTrafficPolicy: Local
+  # externalTrafficPolicy: Cluster
+  type: LoadBalancer
+  loadBalancerIP: 192.168.1.152
+  selector:
+    powerdns: auth
+  ports:
+    - name: "dns-tcp"
+      protocol: TCP
+      port: 53
+      targetPort: 53
+      # targetPort: dns-tcp
+    - name: "dns-udp"
+      port: 53
+      protocol: UDP
+      targetPort: 53
+    - name: "auth-web"
+      protocol: TCP
+      port: 8081
+      targetPort: 8081
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: auth-web
+#   labels:
+#     powerdns: auth
+#   annotations:
+#     metallb.universe.tf/address-pool: default
+#     metallb.universe.tf/allow-shared-ip: "thinkpad"
+# spec:
+#   externalTrafficPolicy: Local
+#   annotations:
+#     metallb.universe.tf/address-pool: default
+#     metallb.universe.tf/allow-shared-ip: "thinkpad"
+#   type: LoadBalancer
+#   loadBalancerIP: 192.168.1.151
+#   selector:
+#     powerdns: auth
+#   ports:
+#     - name: "auth-web"
+#       protocol: TCP
+#       port: 8081
+#       targetPort: 8081
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth
+  labels:
+    powerdns: auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      powerdns: auth
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        powerdns: auth
+    spec:
+      # By default port 53 needs to be opened by root
+      # We might be able to fix this via CAP
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+      #   fsGroup: 2000
+      restartPolicy: Always
+      containers:
+        - name: auth
+          image: powerdns/pdns-auth-47:4.7.3
+          ports:
+            - containerPort: 53
+              protocol: UDP
+            - containerPort: 53
+            - containerPort: 8081
+          env:
+            - name: PDNS_AUTH_API_KEY
+              value: hackbach
+          resources: {}

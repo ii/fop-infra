@@ -1,0 +1,54 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    powerdns: recursor
+  name: recursor
+spec:
+  ports:
+    - name: "2053"
+      port: 2053
+      targetPort: 53
+    - name: 2053-udp
+      port: 2053
+      protocol: UDP
+      targetPort: 53
+    - name: "8082"
+      port: 8082
+      targetPort: 8082
+  selector:
+    powerdns: recursor
+status:
+  loadBalancer: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recursor
+  labels:
+    powerdns: recursor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      powerdns: recursor
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        powerdns: recursor
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: recursor
+          image: powerdns/pdns-recursor-47:4.7.4
+          ports:
+            - containerPort: 53
+            - containerPort: 53
+              protocol: UDP
+            - containerPort: 8082
+          env:
+            - name: PDNS_RECURSOR_API_KEY
+              value: hackbach
+          resources: {}
