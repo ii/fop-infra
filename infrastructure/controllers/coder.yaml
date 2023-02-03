@@ -53,9 +53,9 @@ kind: Secret
 metadata:
   name: coder-db-url
   namespace: nginx
-type: kubernetes.io/tls
+type: Opaque
 data:
-  url: cG9zdGdyZXM6Ly9jb2Rlcjpjb2RlckBjb2Rlci1kYi1wb3N0Z3Jlc3FsLmNvZGVyLnN2Yy5oYWNrYmFjaC5jbHVzdGVyOjU0MzIvY29kZXI/c3NsbW9kZT1kaXNhYmxlCg==
+  url: cG9zdGdyZXM6Ly9jb2Rlcjpjb2RlckBjb2Rlci1kYi1wb3N0Z3Jlc3FsLmNvZGVyLnN2Yy5jbHVzdGVyLmxvY2FsOjU0MzIvY29kZXI/c3NsbW9kZT1kaXNhYmxl
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
