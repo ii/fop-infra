@@ -63,3 +63,30 @@ spec:
       #   - name: powerdns-admin-data
       #     persistentVolumeClaim:
       #       claimName: powerdns-admin-data
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: powerdns-ii-nz
+  namespace: default
+  labels:
+    environment: production
+  annotations:
+    cert-manager.io/cluster-issuer: ii-nz-letsencrypt-prod
+    # kubernetes.io/ingress.class: nginx
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - "powerdns.ii.nz"
+  rules:
+    - host: "powerdns.ii.nz"
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: admin
+                port:
+                  number: 80
