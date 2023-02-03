@@ -55,7 +55,7 @@ metadata:
   namespace: nginx
 type: kubernetes.io/tls
 data:
-  url: "postgres://coder:coder@coder-db-postgresql.coder.svc.hackbach.cluster:5432/coder?sslmode=disable"
+  url: cG9zdGdyZXM6Ly9jb2Rlcjpjb2RlckBjb2Rlci1kYi1wb3N0Z3Jlc3FsLmNvZGVyLnN2Yy5oYWNrYmFjaC5jbHVzdGVyOjU0MzIvY29kZXI/c3NsbW9kZT1kaXNhYmxlCg==
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
