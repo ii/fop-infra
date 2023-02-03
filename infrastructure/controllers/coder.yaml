@@ -18,8 +18,8 @@ spec:
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: HelmRepository
 metadata:
-  name: coder
-  namespace: coder-v2
+  name: coder-v2
+  namespace: coder
 spec:
   interval: 24h
   url: https://helm.coder.com/v2
