@@ -4,16 +4,16 @@ kind: Service
 metadata:
   name: admin
 spec:
-  type: LoadBalancer
-  loadBalancerIP: 192.168.1.155
+  type: ClusterIP
+  # loadBalancerIP: 192.168.1.155
   ports:
     - name: "powerdns-admin"
       port: 80
       targetPort: 80
   selector:
     powerdns: admin
-status:
-  loadBalancer: {}
+# status:
+#   loadBalancer: {}
 # ---
 # apiVersion: v1
 # kind: PersistentVolumeClaim

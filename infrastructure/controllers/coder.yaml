@@ -85,6 +85,8 @@ spec:
     #   type: LoadBalancer
     #   loadBalancerIP: ""
     coder:
+      service:
+        type: ClusterIP
       env:
         - name: CODER_PG_CONNECTION_URL
           valueFrom:
