@@ -1,0 +1,95 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: coder
+  labels:
+    toolkit.fluxcd.io/tenant: sre-team
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: bitnami
+  namespace: coder
+spec:
+  interval: 24h
+  url: https://charts.bitnami.com/bitnami
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: coder
+  namespace: coder-v2
+spec:
+  interval: 24h
+  url: https://helm.coder.com/v2
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: coder-db
+  namespace: coder
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: postgresql
+      version: "12.1.14"
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+        namespace: coder
+      interval: 12h
+  values:
+    auth:
+      username: coder
+      password: coder
+      database: coder
+    persistence:
+      size: 10Gi
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: coder-db-url
+  namespace: nginx
+type: kubernetes.io/tls
+data:
+  url: "postgres://coder:coder@coder-db-postgresql.coder.svc.hackbach.cluster:5432/coder?sslmode=disable"
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: coder
+  namespace: coder
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: coder
+      version: "0.16.0"
+      sourceRef:
+        kind: HelmRepository
+        name: coder-v2
+        namespace: coder
+      interval: 12h
+  values:
+    ingress:
+      enable: true
+      className: nginx
+      tls:
+        enable: true
+      host: "coder.ii.nz"
+      wildCardHost: "*-coder.ii.nz"
+    # service:
+    #   type: LoadBalancer
+    #   loadBalancerIP: ""
+    coder:
+      env:
+        - name: CODER_PG_CONNECTION_URL
+          valueFrom:
+            secretKeyRef:
+              name: coder-db-url
+              key: url
+        - name: CODER_ACCESS_URL
+          value: "https://coder.ii.nz"
