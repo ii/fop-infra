@@ -34,9 +34,10 @@ spec:
         namespace: external-dns
       interval: 12h
   values:
-    sources: |-
-      service
-      ingress
+    # sources: "service\ingress"
+    #|-
+    #  service
+    #  ingress
     crd:
       create: true
     txtPrefix: ii
