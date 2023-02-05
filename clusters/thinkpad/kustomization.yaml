@@ -12,6 +12,7 @@ kind: Kustomization
 #     name: flux-system
 resources:
   - ../../infrastructure/loadbalancer/metallb/metallb.yaml
+  - ./metallb-config.yaml
   - ../../infrastructure/ingress/nginx/nginx-ingress.yaml
   - ../../infrastructure/storage/longhorn/longhorn.yaml
   - ../../infrastructure/certs/cert-manager/cert-manager.yaml
