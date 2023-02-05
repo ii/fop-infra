@@ -3,6 +3,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: auth
+  namespace: powerdns
   labels:
     powerdns: auth
   # annotations:
@@ -58,6 +59,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: auth
+  namespace: powerdns
   labels:
     powerdns: auth
 spec:
