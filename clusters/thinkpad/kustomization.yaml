@@ -5,7 +5,7 @@ resources:
   - ../../infrastructure/loadbalancer/metallb/metallb.yaml
   - ../../infrastructure/ingress/nginx/nginx-ingress.yaml
   - ../../infrastructure/storage/longhorn/longhorn.yaml
-  - ../../infrastructure/certs/cert-manager/certmanager.yaml
+  - ../../infrastructure/certs/cert-manager/cert-manager.yaml
   # Tryingto get PowerDNS into a chart?
   # - ../../infrastructure/dns/powerdns/ii-powerdns.yaml
   - ../../infrastructure/dns/powerdns/manifests/powerdns-admin.yaml
