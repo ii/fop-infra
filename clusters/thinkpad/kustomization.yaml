@@ -24,3 +24,4 @@ resources:
   - ../../infrastructure/dns/powerdns/manifests/powerdns-auth.yaml
   - ../../infrastructure/dns/powerdns/manifests/powerdns-dnsdist.yaml
   - ../../infrastructure/dns/powerdns/manifests/powerdns-recursor.yaml
+  - ../../apps/minecraft/itzg-minecraft.yaml
