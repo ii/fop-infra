@@ -93,6 +93,7 @@ spec:
               value: hackbach
           resources: {}
           lifeCycle:
+            # from  https://github.com/aescanero/helm-charts/blob/76fcfc3de2db248acaa73c9a1c7572c19bf96504/charts/powerdns/templates/powerdns-deployment.yaml#L36-L42
             postStart:
               exec:
                 command:

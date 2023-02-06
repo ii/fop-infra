@@ -81,3 +81,7 @@ spec:
 #       recordType: A
 #       targets:
 #         - 127.0.0.1
+# https://github.com/sharingio/pair/blob/ba677970f9fb2c83c4cddcf63c347f8b0977569b/org/explorations/external-dns-powerdns/external-dns.yaml#L88
+# Some interesting VRS
+# Pair soa
+# https://github.com/sharingio/pair/blob/74c8c9e92db14d3bd3912513c28c6e3bb3b68151/.sharing.io/pair-soa.yaml

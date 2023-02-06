@@ -95,30 +95,30 @@ spec:
               key: url
         - name: CODER_ACCESS_URL
           value: "https://coder.ii.nz"
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: coder-ii-nz
-  namespace: coder
-  labels:
-    environment: production
-  annotations:
-    cert-manager.io/cluster-issuer: ii-nz-letsencrypt-prod
-    # kubernetes.io/ingress.class: nginx
-spec:
-  ingressClassName: nginx
-  tls:
-    - hosts:
-        - "coder.ii.nz"
-  rules:
-    - host: "coder.ii.nz"
-      http:
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: coder
-                port:
-                  number: 80
+# ---
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: coder-ii-nz
+#   namespace: coder
+#   labels:
+#     environment: production
+#   annotations:
+#     cert-manager.io/cluster-issuer: ii-nz-letsencrypt-prod
+#     # kubernetes.io/ingress.class: nginx
+# spec:
+#   ingressClassName: nginx
+#   tls:
+#     - hosts:
+#         - "coder.ii.nz"
+#   rules:
+#     - host: "coder.ii.nz"
+#       http:
+#         paths:
+#           - path: /
+#             pathType: ImplementationSpecific
+#             backend:
+#               service:
+#                 name: coder
+#                 port:
+#                   number: 80
