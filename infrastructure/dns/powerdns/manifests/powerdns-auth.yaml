@@ -92,3 +92,34 @@ spec:
             - name: PDNS_AUTH_API_KEY
               value: hackbach
           resources: {}
+          lifeCycle:
+            postStart:
+              exec:
+                command:
+                  - "/bin/sh"
+                  - "-c"
+                  - |-
+                    a=0
+                    while [ $a -lt 200 ]
+                    do sleep 1
+                      a=$[a+1]
+                      echo 'stage: '$a
+                      if pdnsutil list-zone ii.nz
+                        then echo ii.nz already created
+                        break
+                      elif pdnsutil create-zone ii.nz
+                        then echo CREATED
+                      else sleep 1
+                      fi
+                    done
+                    do sleep 1
+                      a=$[a+1]
+                      echo 'stage: '$a
+                      if pdnsutil list-zone hackbach.nz
+                        then echo hackbach.nz already created
+                        break
+                      elif pdnsutil create-zone hachbach.nz
+                        then echo CREATED
+                      else sleep 1
+                      fi
+                    done

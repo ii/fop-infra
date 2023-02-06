@@ -78,68 +78,46 @@ spec:
           #     name: powerdns-admin-data
           lifecycle:
             postStart:
-              # exec:
-              #   command:
-              #     - "/usr/bin/python3"
-              #     - "-c"
-              #     - |
-              #       import os
+              exec:
+                command:
+                  - "/usr/bin/python3"
+                  - "-c"
+                  - |-
+                    #!/usr/bin/env python3
+                    import os
 
-              #       from powerdnsadmin import create_app
-              #       from powerdnsadmin.models.base import db
-              #       from powerdnsadmin.models.user import User, Role
-              #       from powerdnsadmin.models.domain import Domain
-              #       from powerdnsadmin.models.setting import Setting
+                    from powerdnsadmin import create_app
+                    from powerdnsadmin.models.base import db
+                    from powerdnsadmin.models.user import User, Role
+                    from powerdnsadmin.models.domain import Domain
+                    from powerdnsadmin.models.setting import Setting
 
-              #       app = create_app()
-              #       ctx = app.app_context()
-              #       ctx.push()
+                    app = create_app()
+                    ctx = app.app_context()
+                    ctx.push()
 
-              #       pdns_proto = os.environ['PDNS_PROTO']
-              #       pdns_host = os.environ['PDNS_HOST']
-              #       pdns_port = os.environ['PDNS_PORT']
-              #       pdns_api_url = '{0}://{1}:{2}'.format(pdns_proto, pdns_host, pdns_port)
+                    db.session.add(Setting("pdns_api_key", os.environ["SECRET_KEY"]))
+                    db.session.add(Setting("allow_user_create_domain", True))
+                    db.session.add(Setting("otp_field_enabled", False))
+                    db.session.add(Setting("session_timeout", 60))
+                    db.session.add(Setting("site_name", os.environ["PDNS_SITE_NAME"]))
+                    db.session.add(Setting("pdns_api_url", os.environ["PDNS_URL"]))
+                    db.session.add(Setting("pdns_version", os.environ["PDNS_VERSION"]))
 
-              #       db.session.add(Setting('pdns_api_url', pdns_api_url))
-              #       db.session.add(Setting('pdns_api_key', os.environ['PDNS_API_KEY']))
-              #       db.session.add(Setting('pdns_version', os.environ['PDNS_VERSION']))
-              #       db.session.add(Setting('allow_user_create_domain', True))
-              #       db.session.add(Setting('otp_field_enabled', False))
-              #       db.session.add(Setting('session_timeout', 60))
-              #       db.session.add(Setting('site_name', os.environ['PDNS_SITE_NAME']))
-
-              #       for declared_domain in os.environ['PDNS_DOMAINS'].split(' '):
-              #          db.session.add(Domain(name=declared_domain))
-
-              #       admin_user = os.environ['PDNS_ADMIN_USER']
-              #       admin_pass = os.environ['PDNS_ADMIN_PASSWORD']
-              #       admin_email = os.environ['PDNS_ADMIN_EMAIL']
-              #       admin_user = User(username=admin_user,
-              #                         plain_text_password=admin_pass,
-              #                         email=admin_email,
-              #                         role_id=Role.query.filter_by(name='Administrator').first().id )
-              #       msg = admin_user.create_local_user()
-              #       db.session.commit()
-
-            # postStart:
-            #   exec:
-            #     command:
-            #       - "/bin/sh"
-            #       - "-c"
-            #       - |
-            #         a=0
-            #         while [ $a -lt 200 ]
-            #         do sleep 1
-            #           a=$[a+1]
-            #           echo 'stage: '$a
-            #           if pdnsutil list-zone ii.nz
-            #             then echo ii.nz already created
-            #             break
-            #           elif pdnsutil create-zone ii.nz
-            #             then echo CREATED
-            #           else sleep 1
-            #           fi
-            #         done
+                    admin_user = os.environ["PDNS_ADMIN_USER"]
+                    admin_pass = os.environ["PDNS_ADMIN_PASSWORD"]
+                    admin_email = os.environ["PDNS_ADMIN_EMAIL"]
+                    admin_user = User(
+                      username=admin_user,
+                      plain_text_password=admin_pass,
+                      email=admin_email,
+                      role_id=Role.query.filter_by(name="Administrator").first().id,
+                    )
+                    admin_user.create_local_user()
+                    db.session.commit()
+              # Decided configuration for zones is better left with auth
+              #   for declared_domain in os.environ['PDNS_DOMAINS'].split(' '):
+              #      db.session.add(Domain(name=declared_domain))
       restartPolicy: Always
       # volumes:
       #   - name: powerdns-admin-data
