@@ -69,7 +69,7 @@ spec:
             - name: PDNS_SITE_NAME
               value: powerdns.ii.nz Administration
             - name: PDNS_ZONES
-              value: |
+              value: |-
                 ii.nz
                 hackbach.nz
           image: powerdnsadmin/pda-legacy:v0.3.0
