@@ -61,7 +61,7 @@ spec:
             - name: PDNS_VERSION
               value: 4.7.3
             - name: PDNS_URL
-              value: http://auth.
+              value: http://auth:8081
             - name: PDNS_SITE_NAME
               value: powerdns.ii.nz Administration
             - name: PDNS_ZONES
