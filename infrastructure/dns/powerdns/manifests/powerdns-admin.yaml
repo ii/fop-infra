@@ -60,12 +60,8 @@ spec:
               value: hh@ii.coop
             - name: PDNS_VERSION
               value: 4.7.3
-            - name: PDNS_PROTO
-              value: http
-            - name: PDNS_PORT
-              value: "80"
-            - name: PDNS_HOST
-              value: auth.
+            - name: PDNS_URL
+              value: http://auth.
             - name: PDNS_SITE_NAME
               value: powerdns.ii.nz Administration
             - name: PDNS_ZONES
