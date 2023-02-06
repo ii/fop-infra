@@ -1,0 +1,39 @@
+---
+# https://cert-manager.io/docs/configuration/acme/dns01/
+# https://cert-manager.io/docs/configuration/acme/dns01/rfc2136/
+# kubectl -n powerdns exec -it deployment/auth -- pdnsutil 2>&1 | grep tsig
+# activate-tsig-key ZONE NAME {primary|secondary|producer|consumer}
+# deactivate-tsig-key ZONE NAME {primary|secondary}
+# delete-tsig-key NAME               Delete TSIG key (warning! will not unmap key!)
+# generate-tsig-key NAME ALGORITHM   Generate new TSIG key
+# import-tsig-key NAME ALGORITHM KEY Import TSIG key
+# list-tsig-keys                     List all TSIG keys
+# https://github.com/sharingio/pair/blob/587e1a3ac8a01dad1c8b5f202b6bb03650ffdd32/org/explorations/cert-manager-research/cert-manager-research.org
+# kubectl -n powerdns exec -it deployment/auth -- pdnsutil generate-tsig-key ii hmac-md5
+# kubectl -n powerdns exec -it deployment/auth -- pdnsutil activate-tsig-key ii.nz ii master
+# TSIG_KEY=$(kubectl -n powerdns exec -it deployment/auth -- pdnsutil list-tsig-keys  | grep ii\. | awk '{print $3}')
+# kubectl -n powerdns exec -it deployment/auth -- pdnsutil get-meta ii.nz
+# kubectl -n powerdns exec -it deployment/auth -- pdnsutil set-meta ii.nz TSIG-ALLOW-DNSUPDATE ii
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-ii-nz
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: dns@ii.coop
+    privateKeySecretRef:
+      name: letsencrypt-ii-nz
+    solvers:
+      - dns01:
+          rfc2136:
+            tsigKeyName: ii
+            tsigAlgorithm: HMACMD5
+            tsigSecretSecretRef:
+              name: tsig-powerdns
+              key: powerdns
+            nameserver: 103.233.62.77 # 139.178.68.188
+        selector:
+          dnsNames:
+            - "*.ii.nz"
+            - "ii.nz"
