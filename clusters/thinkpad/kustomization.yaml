@@ -26,4 +26,5 @@ resources:
   - ../../infrastructure/dns/powerdns/manifests/powerdns-recursor.yaml
   - ../../apps/minecraft/itzg-minecraft.yaml
   - ../../apps/ii.nz/ii.nz.yaml
+  - ../../infrastructure/certs/cert-manager/ii-nz.yaml
   # - ../../apps/ii.nz/localhost.ii.nz.yaml
