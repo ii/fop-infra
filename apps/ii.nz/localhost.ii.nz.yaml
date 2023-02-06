@@ -11,6 +11,11 @@ spec:
       recordType: A
       targets:
         - 127.0.0.1
+    - dnsName: "localhost2.ii.nz"
+      recordTTL: 1
+      recordType: A
+      targets:
+        - 127.0.0.1
     # - dnsName: "*.localhost.ii.nz"
     #   recordTTL: 1
     #   recordType: A
