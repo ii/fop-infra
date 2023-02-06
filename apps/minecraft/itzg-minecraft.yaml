@@ -28,7 +28,7 @@ spec:
       version: "4.5.0"
       sourceRef:
         kind: HelmRepository
-        name: bitnami
+        name: itzg
         namespace: minecraft
       interval: 12h
   values:
