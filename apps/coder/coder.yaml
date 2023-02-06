@@ -48,6 +48,7 @@ spec:
     persistence:
       size: 10Gi
 ---
+# kubectl create secret generic coder-db-url -n coder --from-literal=url="postgres://coder:coder@coder-db-postgresql.coder.svc.hackbach.cluster:5432/coder?sslmode=disable" -o yaml
 apiVersion: v1
 kind: Secret
 metadata:

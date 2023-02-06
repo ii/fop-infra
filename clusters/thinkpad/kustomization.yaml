@@ -28,4 +28,5 @@ resources:
   - ../../apps/ii.nz/ii.nz.yaml
   - ../../infrastructure/certs/cert-manager/ii-nz.yaml
   - ../../apps/coder/coder.yaml
+  - ../../infrastructure/storage/longhorn/longhorn-ingress.yaml
   # - ../../apps/ii.nz/localhost.ii.nz.yaml
