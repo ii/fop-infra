@@ -38,9 +38,11 @@ spec:
     #|-
     #  service
     #  ingress
+    # sidecars: []
+    triggerLoopOnEvent: true
     crd:
       create: true
-    txtPrefix: ii
+    # txtPrefix: ii
     provider: pdns
     clusterDomain: hackbach.cluster
     pdns:

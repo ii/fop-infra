@@ -1,10 +1,10 @@
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: powerdns
-  labels:
-    toolkit.fluxcd.io/tenant: sre-team
+# ---
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   name: powerdns
+#   labels:
+#     toolkit.fluxcd.io/tenant: sre-team
 ---
 # https://github.com/aescanero/helm-charts
 # https://github.com/pschiffe/docker-pdns
