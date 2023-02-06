@@ -33,15 +33,33 @@ spec:
         name: external-dns
         namespace: external-dns
       interval: 12h
-  values:
-    # sources: "service\ingress"
-    #|-
-    #  service
-    #  ingress
+    # sources: "service\ningress\n"
     # sidecars: []
+  values:
+    # --source=source ...
+    # The resource types that are queried for
+    # endpoints; specify multiple times for multiple
+    #  node, fake, connector, gateway-httproute,
+    #  gateway-grpcroute, gateway-tlsroute,
+    #  gateway-tcproute, gateway-udproute,
+    #  istio-gateway, istio-virtualservice,
+    # cloudfoundry, contour-ingressroute,
+    #  contour-httpproxy, gloo-proxy, crd, empty,
+    #  skipper-routegroup, openshift-route,
+    # ambassador-host, kong-tcpingress)
+    # ####
+    # --default-targets=DEFAULT-TARGETS ...
+    # Set globally default IP address that will apply as a target instead of source addresses.
+    # Specify multiple times for multiple targets
+    sources: |-
+      service
+      ingress
+      crd
     triggerLoopOnEvent: true
     crd:
       create: true
+      kind: "DNSEndpoint"
+      version: "externaldns.k8s.io/v1alpha1"
     # txtPrefix: ii
     provider: pdns
     clusterDomain: hackbach.cluster
