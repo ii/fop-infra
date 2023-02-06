@@ -63,7 +63,7 @@ spec:
             - name: PDNS_PROTO
               value: http
             - name: PDNS_PORT
-              value: 80
+              value: "80"
             - name: PDNS_HOST
               value: auth.
             - name: PDNS_SITE_NAME
