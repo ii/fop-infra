@@ -25,6 +25,11 @@ spec:
   #                that must be ready before this HelmRelease can be reconciled.
   targetNamespace: "longhorn-system" # Defaults to the namespace of the HelmRelease.
   chart:
+    install:
+      createNamespace: true
+    upgrade:
+      crds: CreateReplace
+    interval: 12h
     spec:
       chart: longhorn
       version: "1.4.0"
@@ -32,8 +37,3 @@ spec:
         kind: HelmRepository
         name: longhorn
         namespace: flux-system
-      install:
-        createNamespace: true
-      upgrade:
-        crds: CreateReplace
-      interval: 12h
