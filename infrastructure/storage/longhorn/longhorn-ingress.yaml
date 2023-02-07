@@ -5,7 +5,7 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: ii-nz-letsencrypt-prod
   name: longhorn-ii-nz
-  namespace: longhorn
+  namespace: longhorn-system
 spec:
   ingressClassName: nginx
   rules:
