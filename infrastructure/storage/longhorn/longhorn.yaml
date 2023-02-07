@@ -29,7 +29,6 @@ spec:
   upgrade:
     crds: CreateReplace
   chart:
-    interval: 12h
     spec:
       chart: longhorn
       version: "1.4.0"
