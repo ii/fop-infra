@@ -15,7 +15,7 @@ resources:
   - ../../infrastructure/ingress/nginx/nginx-ingress.yaml
   - ../../infrastructure/storage/longhorn/longhorn.yaml
   - ../../infrastructure/certs/cert-manager/cert-manager.yaml
-  - ../../infrastructure/dns/powerdns/external-dns.yaml
+  # - ../../infrastructure/dns/powerdns/external-dns.yaml
   # Tryingto get PowerDNS into a chart?
   # - ../../infrastructure/dns/powerdns/ii-powerdns.yaml
   - ../../infrastructure/dns/powerdns/manifests/powerdns-ns.yaml
