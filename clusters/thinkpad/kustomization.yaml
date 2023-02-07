@@ -12,9 +12,8 @@ kind: Kustomization
 #     name: flux-system
 resources:
   - ../../infrastructure/loadbalancer/metallb/metallb.yaml
-  - ./metallb-config.yaml
   - ../../infrastructure/ingress/nginx/nginx-ingress.yaml
-  - ../../infrastructure/storage/longhorn/longhorn.yaml
+  # - ../../infrastructure/storage/longhorn/longhorn.yaml
   - ../../infrastructure/certs/cert-manager/cert-manager.yaml
   - ../../infrastructure/dns/powerdns/external-dns.yaml
   # Tryingto get PowerDNS into a chart?
@@ -24,9 +23,12 @@ resources:
   - ../../infrastructure/dns/powerdns/manifests/powerdns-auth.yaml
   - ../../infrastructure/dns/powerdns/manifests/powerdns-dnsdist.yaml
   - ../../infrastructure/dns/powerdns/manifests/powerdns-recursor.yaml
+  # Infra Config
+  # - ../../infrastructure/storage/longhorn/longhorn-ingress.yaml
+  - ./metallb-config.yaml
+  # Apps
   - ../../apps/minecraft/itzg-minecraft.yaml
   - ../../apps/ii.nz/ii.nz.yaml
   - ../../infrastructure/certs/cert-manager/ii-nz.yaml
   - ../../apps/coder/coder.yaml
-  - ../../infrastructure/storage/longhorn/longhorn-ingress.yaml
   # - ../../apps/ii.nz/localhost.ii.nz.yaml

@@ -15,6 +15,7 @@ spec:
   interval: 24h
   url: https://charts.longhorn.io
 ---
+# https://fluxcd.io/flux/components/helm/helmreleases/
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
@@ -22,6 +23,13 @@ metadata:
   namespace: longhorn
 spec:
   interval: 30m
+  suspend: false
+  # releaseName: "longhorn-longhorn" # Defaults to a composition of '[TargetNamespace-]Name'.
+  # targetNamespace: "longhorn" # Defaults to the namespace of the HelmRelease.
+  # storageNamespace: "" # Defaults to the namespace of the HelmRelease.
+  # DependsOn: [] # a dependency.CrossNamespaceDependencyReference slice with
+  #                references to HelmRelease resources
+  #                that must be ready before this HelmRelease can be reconciled.
   chart:
     spec:
       chart: longhorn
@@ -30,4 +38,8 @@ spec:
         kind: HelmRepository
         name: longhorn
         namespace: longhorn
+      install:
+        createNamespace: true
+      upgrade:
+        crds: CreateReplace
       interval: 12h
