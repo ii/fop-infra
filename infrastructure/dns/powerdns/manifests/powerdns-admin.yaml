@@ -72,6 +72,11 @@ spec:
           name: admin
           ports:
             - containerPort: 80
+          # https://github.com/PowerDNS-Admin/PowerDNS-Admin#option-2-using-docker-compose (port 9191 or 80?)
+          livenessProbe:
+            exec:
+              command: ["/bin/sh", "-c", "nc -vz 127.0.0.1 80 2>/dev/null"]
+            initialDelaySeconds: 80
           # volumeMounts:
           #   - mountPath: /data
           #     name: powerdns-admin-data
