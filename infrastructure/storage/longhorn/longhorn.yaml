@@ -24,11 +24,11 @@ spec:
   #                references to HelmRelease resources
   #                that must be ready before this HelmRelease can be reconciled.
   targetNamespace: "longhorn-system" # Defaults to the namespace of the HelmRelease.
+  install:
+    createNamespace: true
+  upgrade:
+    crds: CreateReplace
   chart:
-    install:
-      createNamespace: true
-    upgrade:
-      crds: CreateReplace
     interval: 12h
     spec:
       chart: longhorn
