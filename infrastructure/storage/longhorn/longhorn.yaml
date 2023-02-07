@@ -1,16 +1,9 @@
 ---
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: longhorn
-  labels:
-    toolkit.fluxcd.io/tenant: sre-team
----
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: HelmRepository
 metadata:
   name: longhorn
-  namespace: longhorn
+  namespace: flux-system
 spec:
   interval: 24h
   url: https://charts.longhorn.io
@@ -20,7 +13,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: longhorn
-  namespace: longhorn
+  namespace: flux-system
 spec:
   interval: 30m
   suspend: false
@@ -30,6 +23,7 @@ spec:
   # DependsOn: [] # a dependency.CrossNamespaceDependencyReference slice with
   #                references to HelmRelease resources
   #                that must be ready before this HelmRelease can be reconciled.
+  targetNamespace: "longhorn-system" # Defaults to the namespace of the HelmRelease.
   chart:
     spec:
       chart: longhorn
@@ -37,7 +31,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: longhorn
-        namespace: longhorn
+        namespace: flux-system
       install:
         createNamespace: true
       upgrade:
