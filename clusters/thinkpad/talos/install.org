@@ -1,0 +1,134 @@
+#+title: Talos
+
+* Flash via Etcher
+https://github.com/siderolabs/talos/releases/download/v1.3.3/talos-amd64.iso
+* Boot via USB
+Set BIOS to prefer USB Disk for now
+* Ensure all Disks are ready
+We will install Talos to the NVME and use the sda for rook/ceph storage
+* Look at disks:
+#+begin_src shell
+talosctl -n 192.168.1.145 disks --insecure
+#+end_src
+
+#+RESULTS:
+#+begin_example
+DEV            MODEL                            SERIAL            TYPE   UUID   WWID   MODALIAS      NAME   SIZE     BUS_PATH
+/dev/nvme0n1   Samsung SSD 970 EVO Plus 500GB   S4EVNX0R514146X   NVME   -      -      -             -      500 GB   /pci0000:00/0000:00:1d.0/0000:70:00.0/nvme/nvme0/nvme0n1
+/dev/sda       CT1000BX500SSD1                  -                 SSD    -      -      scsi:t-0x00   -      1.0 TB   /pci0000:00/0000:00:17.0/ata3/host2/target2:0:0/2:0:0:0/
+/dev/sdb       USB Flash Disk                   -                 HDD    -      -      scsi:t-0x00   -      32 GB    /pci0000:00/0000:00:14.0/usb1/1-1/1-1:1.0/host3/target3:0:0/3:0:0:0/
+#+end_example
+
+* Layer 2 Shared IP
+We will use:
+- 192.168.1.150 as our shared VIP.
+- 192.168.1.151-159 as our MetalLB default pool
+- 192.168.1.145 as our node IP (it's static set via DHCP)
+- Until DNS is up /etc/hosts needs '192.168.1.150 k8s.ii.nz'
+
+Once DNS is up, k8s.ii.nz can point to our external IP, or the VIP
+
+However, we talosctl should be used on the node IP:
+> Thus it is possible to access the Talos API over the VIP, but it is not recommended, as you cannot access the VIP when etcd is down - and then you could not access the Talos API to recover etcd.
+> the bootstrap command will need to target one of the controlplane nodes directly.
+* Configure your Talos Machines
+https://www.talos.dev/v1.3/talos-guides/network/vip/#configure-your-talos-machines
+#+begin_src yaml :tangle thinkpad.patch.yaml
+# cluster:
+#   network:
+#     dnsDomain: cluster.local
+#     podSubnets:
+#       - 192.168.0.0/16
+#     serviceSubnets:
+#       - 192.0.0.0/12
+#     cni:
+#       name: none
+machine:
+  network:
+    hostname: thinkpad
+    interfaces:
+    - interface: eth0
+      dhcp: true
+      # vip:
+      #   ip: 192.168.1.150
+  # kubelet:
+  #   nodeIP:
+  #     validSubnets:
+  #       - 192.168.10.0/24
+#+end_src
+* Generate Secrets
+#+begin_src shell :results none
+talosctl gen secrets -o secrets/secrets.yaml
+#+end_src
+* Configure Talos
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+talosctl gen config \
+    --with-secrets secrets/secrets.yaml \
+    --additional-sans=k8s.ii.nz,192.168.1.145 \
+    --dns-domain=cluster.local \
+    --install-disk=/dev/nvme0n1 \
+    thinkpad https://192.168.1.145:6443
+talosctl machineconfig patch controlplane.yaml \
+    --patch @thinkpad.patch.yaml \
+    --output thinkpad.yaml
+#+end_src
+
+#+RESULTS:
+#+begin_example
+generating PKI and tokens
+Created /Users/hh/hackbach-infra/clusters/thinkpad/talos/controlplane.yaml
+Created /Users/hh/hackbach-infra/clusters/thinkpad/talos/worker.yaml
+Created /Users/hh/hackbach-infra/clusters/thinkpad/talos/talosconfig
+#+end_example
+* Apply Talos Config
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+talosctl apply-config --insecure \
+  --nodes 192.168.1.145 \
+  --file thinkpad.yaml
+#+end_src
+
+#+RESULTS:
+#+begin_example
+#+end_example
+
+#+begin_src shell
+talosctl --talosconfig=./talosconfig config endpoint 192.168.1.145
+#+end_src
+
+#+RESULTS:
+#+begin_example
+#+end_example
+* Bootstrap Cluster
+#+begin_src shell
+talosctl bootstrap -n 192.168.1.145
+#+end_src
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+talosctl kubeconfig
+#+end_src
+
+#+RESULTS:
+#+begin_example
+nodes are not set for the command: please use `--nodes` flag or configuration file to set the nodes to run the command against
+
+Usage:
+  talosctl kubeconfig [local-path] [flags]
+
+Flags:
+  -f, --force                       Force overwrite of kubeconfig if already present, force overwrite on kubeconfig merge
+      --force-context-name string   Force context name for kubeconfig merge
+  -h, --help                        help for kubeconfig
+  -m, --merge                       Merge with existing kubeconfig (default true)
+
+Global Flags:
+      --cluster string       Cluster to connect to if a proxy endpoint is used.
+      --context string       Context to be used in command
+  -e, --endpoints strings    override default endpoints in Talos configuration
+  -n, --nodes strings        target the specified nodes
+      --talosconfig string   The path to the Talos configuration file. Defaults to 'TALOSCONFIG' env variable if set, otherwise '$HOME/.talos/config' and '/var/run/secrets/talos.dev/config' in order.
+
+#+end_example
+* TODO Untaint
+Need to untaint
+#+begin_src shell
+kubectl taint node thinkpad node-role.kubernetes.io/control-plane:NoSchedule-
+#+end_src

@@ -20,7 +20,6 @@ spec:
   interval: 24h
   url: https://charts.longhorn.io
 ---
-# https://fluxcd.io/flux/components/helm/helmreleases/
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
@@ -40,6 +39,9 @@ spec:
     createNamespace: true
   upgrade:
     crds: CreateReplace
+  # https://github.com/longhorn/charts/blob/master/charts/longhorn/values.yaml
+  # What are chart quesstions?
+  # https://github.com/longhorn/charts/blob/master/charts/longhorn/questions.yaml
   chart:
     spec:
       chart: longhorn

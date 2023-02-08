@@ -1,0 +1,15 @@
+#+title: Prs
+
+* TODO fix
+https://www.talos.dev/v1.3/learn-more/philosophy/#declarative
+This is achievable because Talos is tightly focused to do one thing: run Kubernetes, in the easiest, most secure, most reliable way it can. /Users/stevefrancis/workspace/talos/website/content/v1.3/learn-more
+* TODO fix
+https://www.talos.dev/v1.3/reference/api/#file-level-extensions
+s/filed/field/g
+Indicates the Talos version when this deprecated filed will be removed from API.
+* TODO fix
+https://www.talos.dev/v1.3/reference/api/#specspec
+SpecSpec describes (some) Specuration settings of etcd.
+* TODO fix
+Random text after
+https://www.talos.dev/v1.3/reference/api/#machineservice

@@ -1,0 +1,228 @@
+#+title: Faq
+* Single Node Control Plane Upgrades
+https://github.com/siderolabs/talos/discussions/6554
+https://www.talos.dev/v1.2/talos-guides/upgrading-talos/
+#+begin_src shell
+--preserve=true
+#+end_src
+* TalHelper
+https://github.com/siderolabs/talos/discussions/6770
+https://github.com/budimanjojo/talhelper#about-the-project
+* OpenEBS cStor?
+https://github.com/siderolabs/talos/discussions/6786
+* Wipe only STATE and EMPHERICAL
+https://www.talos.dev/v1.0/talos-guides/resetting-a-machine/
+> Another way to reset a machine is to specify talos.experimental.wipe=system kernel parameter.
+> If the machine got stuck in the boot loop and you access to the console you can use GRUB to specify this kernel argument.
+> Then when Talos boots for the next time it will reset system disk and reboot.
+
+
+#+begin_src shell
+talosctl reset --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL
+#+end_src
+* Kubernetes API Server Anonymous Auth
+https://github.com/siderolabs/talos/discussions/5788
+Anonymous authentication is now disabled by default for the kube-apiserver (CIS compliance).
+
+To enable anonymous authentication, update the machine config with:
+
+#+begin_src yaml
+cluster:
+    apiServer:
+        extraArgs:
+            anonymous-auth: true
+#+end_src
+* Talos API access from Kubernetes
+https://github.com/siderolabs/talos/discussions/6196
+Talos now supports access to its API from within Kubernetes. It can be configured in the machine config as below:
+#+begin_src yaml
+machine:
+  features:
+    kubernetesTalosAPIAccess:
+      enabled: true
+      allowedRoles:
+        - os:reader
+      allowedKubernetesNamespaces:
+        - kube-system
+#+end_src
+https://www.talos.dev/v1.2/advanced/talos-api-access-from-k8s/
+* For air-gapped installations
+https://github.com/siderolabs/talos/discussions/6196
+when the Discovery Service is not enabled, Kubernetes Discovery Backend can be enabled by applying
+the following machine configuration patch:
+
+#+begin_src yaml
+cluster:
+  discovery:
+    registries:
+      kubernetes:
+        disabled: false
+#+end_src
+* Allow Workloads to be scheduled on ControlPlane
+https://www.talos.dev/v1.3/reference/configuration/#machineconfig
+#+begin_src yaml
+cluster:
+  allowSchedulingOnControlPlanes: yes
+#+end_src
+* k8s.gcr.io mirror configuration
+Talos now defaults to adding a registry mirror configuration in the machineconfig for k8s.gcr.io pointing to both registry.k8s.io and k8s.gcr.io unless overridden.
+
+#+begin_src yaml
+
+machine:
+  registries:
+    mirrors:
+      k8s.gcr.io:
+        endpoints:
+          - https://registry.k8s.io
+          - https://k8s.gcr.io
+#+end_src
+* Bridges
+https://www.talos.dev/v1.2/reference/configuration/#bridge
+#+begin_src yaml
+machine:
+  network:
+    interfaces:
+      - interface: br0
+        bridge:
+          stp:
+            enabled: true
+          interfaces:
+            - eth0
+            - eth1
+#+end_src
+* VLAN support in cmdline arguments
+#+begin_example
+vlan=eth1.5:eth1 ip=172.20.0.2::172.20.0.1:255.255.255.0::eth1.5:::::
+#+end_example
+* Seccom Profiles
+https://www.talos.dev/v1.2/kubernetes-guides/configuration/seccomp-profiles/
+#+begin_src yaml
+machine:
+  seccompProfiles:
+    - name: audit.json
+      value:
+        defaultAction: SCMP_ACT_LOG
+    - name: deny.json
+      value: {"defaultAction":"SCMP_ACT_LOG"}
+#+end_src
+* Variable substitution for URL query parameter in the talos.config kernel parameter
+https://github.com/siderolabs/talos/discussions/6196
+#+begin_example
+http://example.com/metadata?h=${hostname}&m=${mac}&s=${serial}&u=${uuid}
+#+end_example
+* Containerd Settings
+https://www.talos.dev/v1.3/talos-guides/configuration/containerd/
+(AirGapped)
+* Registry Mirrors
+https://github.com/siderolabs/talos/discussions/6642
+#+begin_src yaml
+machine:
+    registries:
+        mirrors:
+            docker.io:
+                endpoints:
+                    - "https://mirror-registry/v2/mirror.docker.io"
+                overridePath: true
+#+end_src
+* Extensions
+https://github.com/siderolabs/extensions
+https://github.com/siderolabs/extensions/tree/main/storage/iscsi-tools
+https://github.com/siderolabs/extensions/pkgs/container/iscsi-tools
+* Local Storage needs iscsi
+https://www.talos.dev/v1.3/kubernetes-guides/configuration/replicated-local-storage-with-openebs-jiva/
+#+begin_src yaml
+- op: add
+  path: /machine/install/extensions
+  value:
+    - image: ghcr.io/siderolabs/iscsi-tools:v0.1.1
+#+end_src
+* Use machine.install.diskSelector
+size
+model
+busPath
+* network.extraHostEntries
+Allows for extra entries to be added to the /etc/hosts file
+#+begin_src yaml
+extraHostEntries:
+    - ip: 192.168.1.100 # The IP of the host.
+      # The host alias.
+      aliases:
+        - example
+        - example.domain.tld
+#+end_src
+* Deploying Cilium CNI
+https://www.talos.dev/v1.3/kubernetes-guides/network/deploying-cilium/
+Talos also includes the modules:
+
+- CONFIG_NETFILTER_XT_TARGET_TPROXY=m
+- CONFIG_NETFILTER_XT_TARGET_CT=m
+- CONFIG_NETFILTER_XT_MATCH_MARK=m
+- CONFIG_NETFILTER_XT_MATCH_SOCKET=m
+This allows you to set --set enableXTSocketFallback=false on the helm install/template command preventing Cilium from disabling the ip_early_demux kernel feature. This will win back some performance.
+* Air Gapped
+https://www.talos.dev/v1.3/advanced/air-gapped/
+* Decent Kernel Default for K8s
+https://github.com/siderolabs/talos/issues/4654
+* Talos Kernel config
+https://github.com/siderolabs/pkgs/blob/main/kernel/build/config-amd64
+* Generating Talos Linux ISO image with custom kernel arguments
+https://www.talos.dev/v1.3/learn-more/knowledge-base/#generating-talos-linux-iso-image-with-custom-kernel-arguments
+#+begin_src shell
+docker run --rm -i ghcr.io/siderolabs/imager:v1.3.2 iso --arch amd64 --tar-to-stdout --extra-kernel-arg console=ttyS1 --extra-kernel-arg console=tty0 | tar xz
+#+end_src
+* Logging Kubernetes audit logs with loki
+If using loki-stack helm chart to gather logs from the Kubernetes cluster, you can use the helm values to configure loki-stack to log Kubernetes API server audit logs:
+
+#+begin_src yaml
+promtail:
+  extraArgs:
+    - -config.expand-env
+  # this is required so that the promtail process can read the kube-apiserver audit logs written as `nobody` user
+  containerSecurityContext:
+    capabilities:
+      add:
+        - DAC_READ_SEARCH
+  extraVolumes:
+    - name: audit-logs
+      hostPath:
+        path: /var/log/audit/kube
+  extraVolumeMounts:
+    - name: audit-logs
+      mountPath: /var/log/audit/kube
+      readOnly: true
+  config:
+    snippets:
+      extraScrapeConfigs: |
+        - job_name: auditlogs
+          static_configs:
+            - targets:
+                - localhost
+              labels:
+                job: auditlogs
+                host: ${HOSTNAME}
+                __path__: /var/log/audit/kube/*.log
+#+end_src
+* Minimal
+https://www.talos.dev/v1.3/learn-more/philosophy/
+As a result, the OS right now produces a SquashFS image size of less than 80 MB.
+* System Information Spec (smbios)
+https://www.talos.dev/v1.3/reference/api/#systeminformationspec
+* BootstrapManifestsConfigSpec
+https://www.talos.dev/v1.3/reference/api/#bootstrapmanifestsconfigspec
+* extra_manifests
+https://www.talos.dev/v1.3/reference/api/#extramanifestsconfigspec
+* Extra Manifest (a single extra manifest to download)
+https://www.talos.dev/v1.3/reference/api/#extramanifest
+* Extra volume
+https://www.talos.dev/v1.3/reference/api/#extravolume
+* Static Pod Spec
+StaticPodSpec describes static pod spec, it contains marshaled *v1.Pod spec.
+https://www.talos.dev/v1.3/reference/api/#staticpodspec
+* Cluster configural
+https://www.talos.dev/v1.3/reference/api/#clusterconfig
+name
+control_plane
+cluster_network
+allow_scheduling_on_control_planes
+*
