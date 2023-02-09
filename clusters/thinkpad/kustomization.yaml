@@ -28,7 +28,8 @@ resources:
   # https://github.com/longhorn/longhorn/blob/69dcfa527784c0ccd80830cf0fd1852ac888ef04/chart/README.md#uninstallation
   # - ../../infrastructure/storage/longhorn/longhorn.yaml
   # - ../../infrastructure/storage/longhorn/longhorn-ingress.yaml
-  - ./metallb-config.yaml
+  # Infra that needs CRDs
+  #- ./metallb-config.yaml
   # Apps
   # - ../../apps/minecraft/itzg-minecraft.yaml
   # - ../../apps/ii.nz/ii.nz.yaml
