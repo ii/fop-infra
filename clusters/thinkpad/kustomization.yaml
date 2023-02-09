@@ -27,11 +27,15 @@ resources:
   - ../../infrastructure/dns/powerdns/manifests/powerdns-dnsdist.yaml
   - ../../infrastructure/dns/powerdns/manifests/powerdns-recursor.yaml
   # Infra Config
-  - ../../infrastructure/storage/longhorn/longhorn-ingress.yaml
+  # To remove, need to run this first:
+  # kubectl -n longhorn-system patch -p '{"value": "true"}' --type=merge lhs deleting-confirmation-flag
+  # https://github.com/longhorn/longhorn/blob/69dcfa527784c0ccd80830cf0fd1852ac888ef04/chart/README.md#uninstallation
+  # - ../../infrastructure/storage/longhorn/longhorn.yaml
+  # - ../../infrastructure/storage/longhorn/longhorn-ingress.yaml
   - ./metallb-config.yaml
   # Apps
-  - ../../apps/minecraft/itzg-minecraft.yaml
-  - ../../apps/ii.nz/ii.nz.yaml
-  - ../../infrastructure/certs/cert-manager/ii-nz.yaml
+  # - ../../apps/minecraft/itzg-minecraft.yaml
+  # - ../../apps/ii.nz/ii.nz.yaml
+  # - ../../infrastructure/certs/cert-manager/ii-nz.yaml
   # - ../../apps/coder/coder.yaml
   # - ../../apps/ii.nz/localhost.ii.nz.yaml
