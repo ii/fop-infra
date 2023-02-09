@@ -4,7 +4,10 @@ kind: Namespace
 metadata:
   name: metallb-system
   labels:
-    toolkit.fluxcd.io/tenant: sre-team
+    kubernetes.io/metadata.name: metallb-system
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/audit: baseline
+    pod-security.kubernetes.io/warn: baseline
 ---
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: HelmRepository

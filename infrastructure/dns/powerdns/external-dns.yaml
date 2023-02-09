@@ -52,9 +52,9 @@ spec:
     # Set globally default IP address that will apply as a target instead of source addresses.
     # Specify multiple times for multiple targets
     sources:
-      - service
-      - ingress
       - crd
+      # - service
+      # - ingress
     triggerLoopOnEvent: true
     crd:
       create: true
