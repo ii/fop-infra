@@ -13,6 +13,7 @@ kind: Kustomization
 resources:
   # Infra that needs CRDs
   - ./metallb-config.yaml
+  - ./ii.nz-dns.yaml
   # Apps
   - ../../../apps/ii.nz/localhost.ii.nz.yaml
   - ../../../infrastructure/certs/cert-manager/ii-nz.yaml
