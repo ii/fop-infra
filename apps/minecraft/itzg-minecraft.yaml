@@ -32,6 +32,9 @@ spec:
         namespace: minecraft
       interval: 12h
   values:
+    persistence:
+      dataDir:
+        enabled: true
     minecraftServer:
       eula: true
       gameMode: survival

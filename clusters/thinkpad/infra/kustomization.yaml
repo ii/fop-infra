@@ -19,5 +19,5 @@ resources:
   - ../../../apps/ii.nz/localhost.ii.nz.yaml
   - ../../../infrastructure/certs/cert-manager/ii-nz.yaml
   - ../../../apps/ii.nz/ii.nz.yaml
-  # - ../../../apps/minecraft/itzg-minecraft.yaml
+  - ../../../apps/minecraft/itzg-minecraft.yaml
   - ../../../apps/coder/coder.yaml
