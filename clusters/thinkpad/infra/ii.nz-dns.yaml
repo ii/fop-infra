@@ -11,8 +11,10 @@ spec:
       recordType: A
       targets:
         - 103.233.62.77
-    - dnsName: "*.ii.nz"
-      recordTTL: 1
-      recordType: A
-      targets:
-        - 103.233.62.77
+    # TXT records are created with * to track
+    # Would need to disable TXT registry tracking
+    # - dnsName: "*.ii.nz"
+    #   recordTTL: 1
+    #   recordType: A
+    #   targets:
+    #     - 103.233.62.77
