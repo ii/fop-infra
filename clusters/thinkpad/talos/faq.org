@@ -59,6 +59,7 @@ cluster:
         disabled: false
 #+end_src
 * Allow Workloads to be scheduled on ControlPlane
+I THINK this gets rid of the taint for single node clusters.
 https://www.talos.dev/v1.3/reference/configuration/#machineconfig
 #+begin_src yaml
 cluster:
@@ -68,7 +69,6 @@ cluster:
 Talos now defaults to adding a registry mirror configuration in the machineconfig for k8s.gcr.io pointing to both registry.k8s.io and k8s.gcr.io unless overridden.
 
 #+begin_src yaml
-
 machine:
   registries:
     mirrors:

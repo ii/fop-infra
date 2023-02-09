@@ -31,7 +31,23 @@ Once DNS is up, k8s.ii.nz can point to our external IP, or the VIP
 However, we talosctl should be used on the node IP:
 > Thus it is possible to access the Talos API over the VIP, but it is not recommended, as you cannot access the VIP when etcd is down - and then you could not access the Talos API to recover etcd.
 > the bootstrap command will need to target one of the controlplane nodes directly.
-* Configure your Talos Machines
+* Using talhelper
+MAYBE NOT
+https://github.com/budimanjojo/talhelper#about-the-project
+** from scratch
+Our config is at [[./talconfig.yaml]]
+#+begin_src shell :results none
+talhelper gensecret > talsecret.sops.yaml
+#+end_src
+#+begin_src shell
+cat talsecret.sops.yaml
+#+end_src
+
+#+RESULTS:
+#+begin_example
+#+end_example
+
+* Configure your Talos Machines V1
 https://www.talos.dev/v1.3/talos-guides/network/vip/#configure-your-talos-machines
 #+begin_src yaml :tangle thinkpad.patch.yaml
 # cluster:
@@ -56,6 +72,42 @@ machine:
   #     validSubnets:
   #       - 192.168.10.0/24
 #+end_src
+* thinkpad-path.yaml
+#+begin_src yaml :tangle thinkpad-patch.yaml
+- op: replace
+  path: /cluster/allowSchedulingOnMasters
+  value: true
+- op: replace
+  path: /machine/network/hostname
+  value: thinkpad
+    # registries:
+    #   kubernetes:
+    #     disabled: true
+- op: replace
+  path: /machine/kubelet/extraMounts
+  value:
+    - destination: /var/local-path-provisioner
+      type: bind
+      source: /var/local-path-provisioner
+      options:
+        - bind
+        - rshared
+        - rw
+# - op: add
+#   path: /cluster/proxy
+#   value:
+#     disabled: true
+# - op: add
+#   path: /cluster/network/cni
+#   value:
+#     name: none
+    # urls:
+    #   - https://gitlab.com/BobyMCbobs/home-network/blob/066b07b3/cilium/cilium.yaml
+# - op: replace
+#   path: /machine/sysctls
+#   value:
+#     kernel.kexec_load_disabled: "1"
+#+end_src
 * Generate Secrets
 #+begin_src shell :results none
 talosctl gen secrets -o secrets/secrets.yaml
@@ -69,7 +121,7 @@ talosctl gen config \
     --install-disk=/dev/nvme0n1 \
     thinkpad https://192.168.1.145:6443
 talosctl machineconfig patch controlplane.yaml \
-    --patch @thinkpad.patch.yaml \
+    --patch @thinkpad-patch.yaml \
     --output thinkpad.yaml
 #+end_src
 
@@ -83,13 +135,9 @@ Created /Users/hh/hackbach-infra/clusters/thinkpad/talos/talosconfig
 * Apply Talos Config
 #+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
 talosctl apply-config --insecure \
-  --nodes 192.168.1.145 \
+      --nodes 192.168.1.145 \
   --file thinkpad.yaml
 #+end_src
-
-#+RESULTS:
-#+begin_example
-#+end_example
 
 #+begin_src shell
 talosctl --talosconfig=./talosconfig config endpoint 192.168.1.145
@@ -127,6 +175,12 @@ Global Flags:
       --talosconfig string   The path to the Talos configuration file. Defaults to 'TALOSCONFIG' env variable if set, otherwise '$HOME/.talos/config' and '/var/run/secrets/talos.dev/config' in order.
 
 #+end_example
+* aoeu
+#+begin_src shell
+kubectl patch storageclasses.storage.k8s.io local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+kubectl label namespace local-path-storage pod-security.kubernetes.io/enforce=privileged --overwrite
+kubectl label namespace local-path-storage pod-security.kubernetes.io/enforce-version=latest --overwrite
+#+end_src
 * TODO Untaint
 Need to untaint
 #+begin_src shell

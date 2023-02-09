@@ -62,9 +62,9 @@ spec:
       version: "externaldns.k8s.io/v1alpha1"
     # txtPrefix: ii
     provider: pdns
-    clusterDomain: hackbach.cluster
+    # clusterDomain: cluster.local
     pdns:
-      apiUrl: http://auth.powerdns.svc.hackbach.cluster
+      apiUrl: http://auth.powerdns.svc.cluster.local
       apiPort: 8081
       apiKey: hackbach
       # secretName:
