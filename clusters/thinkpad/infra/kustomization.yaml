@@ -1,5 +1,15 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+metadata:
+  name: infra
+  namespace: flux-system
+# spec:
+#  interval: 10m0s
+#   path: ./clusters/thinkpad
+#   prune: true
+#   sourceRef:
+#     kind: GitRepository
+#     name: flux-system
 resources:
   # Infra that needs CRDs
   - ./metallb-config.yaml
