@@ -13,10 +13,6 @@ kind: Kustomization
 resources:
   - ../../infrastructure/loadbalancer/metallb/metallb.yaml
   - ../../infrastructure/ingress/nginx/nginx-ingress.yaml
-  # To remove, need to run this first:
-  # kubectl -n longhorn-system patch -p '{"value": "true"}' --type=merge lhs deleting-confirmation-flag
-  # https://github.com/longhorn/longhorn/blob/69dcfa527784c0ccd80830cf0fd1852ac888ef04/chart/README.md#uninstallation
-  # - ../../infrastructure/storage/longhorn/longhorn.yaml
   - ../../infrastructure/certs/cert-manager/cert-manager.yaml
   # - ../../infrastructure/dns/powerdns/external-dns.yaml
   # Tryingto get PowerDNS into a chart?
