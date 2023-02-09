@@ -18,6 +18,7 @@ resources:
   - ../../infrastructure/dns/powerdns/manifests/powerdns-admin.yaml
   - ../../infrastructure/dns/powerdns/manifests/powerdns-auth.yaml
   - ../../infrastructure/dns/powerdns/external-dns.yaml
+  - ./infra.yaml
   # Tryingto get PowerDNS into a chart?
   # - ../../infrastructure/dns/powerdns/ii-powerdns.yaml
   # We don't use dist YET
