@@ -70,16 +70,16 @@ spec:
           env:
             - name: TZ
               value: "Pacific/Auckland"
-          readinessProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 2
-            periodSeconds: 10
-          livenessProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 2
-            periodSeconds: 10
+          # readinessProbe:
+          #   tcpSocket:
+          #     port: 8080
+          #   initialDelaySeconds: 2
+          #   periodSeconds: 10
+          # livenessProbe:
+          #   tcpSocket:
+          #     port: 8080
+          #   initialDelaySeconds: 2
+          #   periodSeconds: 10
           # securityContext:
           #   readOnlyRootFilesystem: true
           #   runAsUser: 1000
