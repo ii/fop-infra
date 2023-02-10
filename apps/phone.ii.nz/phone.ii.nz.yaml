@@ -64,13 +64,7 @@ spec:
       containers:
         - name: phone-ii-nz
           image: ghcr.io/ii/phone-webinstall:latest
-          #  registry.gitlab.com/ii/nz:2021.07.13.0000
           imagePullPolicy: IfNotPresent
-          securityContext:
-            readOnlyRootFilesystem: true
-            runAsUser: 1000
-            runAsGroup: 1000
-            allowPrivilegeEscalation: false
           ports:
             - containerPort: 8080
           env:
@@ -86,10 +80,15 @@ spec:
               port: 8080
             initialDelaySeconds: 2
             periodSeconds: 10
-          resources:
-            requests:
-              memory: "60Mi"
-              cpu: "500m"
-            limits:
-              memory: "60Mi"
-              cpu: "500m"
+          # securityContext:
+          #   readOnlyRootFilesystem: true
+          #   runAsUser: 1000
+          #   runAsGroup: 1000
+          #   allowPrivilegeEscalation: false
+          # resources:
+          #   requests:
+          #     memory: "60Mi"
+          #     cpu: "500m"
+          #   limits:
+          #     memory: "60Mi"
+          #     cpu: "500m"
