@@ -18,8 +18,19 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
+        - "omniphone.ii.nz"
         - "phone.ii.nz"
   rules:
+    - host: "omniphone.ii.nz"
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: phone-ii-nz
+                port:
+                  number: 80
     - host: "phone.ii.nz"
       http:
         paths:
