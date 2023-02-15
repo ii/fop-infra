@@ -20,5 +20,5 @@ resources:
   - ../../../infrastructure/certs/cert-manager/ii-nz.yaml
   - ../../../apps/ii.nz/ii.nz.yaml
   - ../../../apps/minecraft/itzg-minecraft.yaml
-  - ../../../apps/coder/coder.yaml
+  # - ../../../apps/coder/coder.yaml
   - ../../../apps/phone.ii.nz/phone.ii.nz.yaml
