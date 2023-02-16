@@ -34,7 +34,7 @@ spec:
   chart:
     spec:
       chart: postgresql
-      version: "12.1.14"
+      version: "12.1.15"
       sourceRef:
         kind: HelmRepository
         name: bitnami
@@ -68,26 +68,17 @@ spec:
   chart:
     spec:
       chart: coder
-      version: "0.17.1"
+      version: "0.17.3"
       sourceRef:
         kind: HelmRepository
         name: coder-v2
         namespace: coder
       interval: 12h
   values:
-    ingress:
-      enable: true
-      className: nginx
-      tls:
-        enable: true
-      host: "coder.ii.nz"
-      wildCardHost: "*-coder.ii.nz"
     # service:
     #   type: LoadBalancer
     #   loadBalancerIP: ""
     coder:
-      service:
-        type: ClusterIP
       env:
         - name: CODER_PG_CONNECTION_URL
           valueFrom:
@@ -96,6 +87,34 @@ spec:
               key: url
         - name: CODER_ACCESS_URL
           value: "https://coder.ii.nz"
+        - name: CODER_WILDCARD_ACCESS_URL
+          value: "*-coder.ii.nz"
+      ingress:
+        enable: true
+        className: nginx
+        tls:
+          enable: true
+        host: "coder.ii.nz"
+        wildCardHost: "*-coder.ii.nz"
+        service:
+          type: ClusterIP
+        annotations:
+          nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+          nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+          nginx.ingress.kubernetes.io/server-snippets: |
+            location / {
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_http_version 1.1;
+            proxy_set_header X-Forwarded-Host $http_host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-For $remote_addr;
+            proxy_set_header Host $host;
+            proxy_set_header Connection "upgrade";
+            proxy_cache_bypass $http_upgrade;
+            }
+        # - name: CODER_ACCESS_URL
+        #  value: "https://coder.ii.nz"
+
 # ---
 # apiVersion: networking.k8s.io/v1
 # kind: Ingress
