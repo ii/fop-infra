@@ -57,64 +57,6 @@ metadata:
 type: Opaque
 data:
   url: cG9zdGdyZXM6Ly9jb2Rlcjpjb2RlckBjb2Rlci1kYi1wb3N0Z3Jlc3FsLmNvZGVyLnN2Yy5jbHVzdGVyLmxvY2FsOjU0MzIvY29kZXI/c3NsbW9kZT1kaXNhYmxl
----
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
-kind: HelmRelease
-metadata:
-  name: coder
-  namespace: coder
-spec:
-  interval: 30m
-  chart:
-    spec:
-      chart: coder
-      version: "0.17.3"
-      sourceRef:
-        kind: HelmRepository
-        name: coder-v2
-        namespace: coder
-      interval: 12h
-  values:
-    # service:
-    #   type: LoadBalancer
-    #   loadBalancerIP: ""
-    coder:
-      env:
-        - name: CODER_PG_CONNECTION_URL
-          valueFrom:
-            secretKeyRef:
-              name: coder-db-url
-              key: url
-        - name: CODER_ACCESS_URL
-          value: "https://coder.ii.nz"
-        - name: CODER_WILDCARD_ACCESS_URL
-          value: "*-coder.ii.nz"
-      ingress:
-        enable: true
-        className: nginx
-        tls:
-          enable: true
-        host: "coder.ii.nz"
-        wildCardHost: "*-coder.ii.nz"
-        service:
-          type: ClusterIP
-        annotations:
-          nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-          nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-          nginx.ingress.kubernetes.io/server-snippets: |
-            location / {
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_http_version 1.1;
-            proxy_set_header X-Forwarded-Host $http_host;
-            proxy_set_header X-Forwarded-Proto $scheme;
-            proxy_set_header X-Forwarded-For $remote_addr;
-            proxy_set_header Host $host;
-            proxy_set_header Connection "upgrade";
-            proxy_cache_bypass $http_upgrade;
-            }
-        # - name: CODER_ACCESS_URL
-        #  value: "https://coder.ii.nz"
-
 # ---
 # apiVersion: networking.k8s.io/v1
 # kind: Ingress
