@@ -14,7 +14,7 @@ resources:
   # Infra that needs CRDs
   - ./metallb-config.yaml
   - ./ii.nz-dns.yaml
-  - ./coder.ii.nz-ingress.yaml
+  # - ./coder.ii.nz-ingress.yaml
   # Apps
   - ../../../apps/ii.nz/localhost.ii.nz.yaml
   - ../../../infrastructure/certs/cert-manager/ii-nz.yaml
