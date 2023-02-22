@@ -2,41 +2,33 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: nginx
-  labels:
-    toolkit.fluxcd.io/tenant: sre-team
+  name: ingress-nginx
 ---
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: HelmRepository
 metadata:
-  name: nginx-stable
-  namespace: nginx
+  name: ingress-nginx
+  namespace: ingress-nginx
 spec:
   interval: 24h
-  url: https://helm.nginx.com/stable
+  url: https://kubernetes.github.io/ingress-nginx
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: nginx
-  namespace: nginx
+  name: ingress-nginx
+  namespace: ingress-nginx
 spec:
   interval: 30m
   chart:
     spec:
-      chart: nginx-ingress
-      version: "0.16.1"
+      chart: ingress-nginx
+      version: "4.5.2"
       sourceRef:
         kind: HelmRepository
-        name: nginx-stable
-        namespace: nginx
+        name: ingress-nginx
+        namespace: ingress-nginx
       interval: 12h
   values:
-    controller:
-      wildcardTLS:
-        # The base64-encoded TLS certificate for every Ingress/VirtualServer host that has TLS enabled but no secret specified. If the parameter is not set, for such Ingress/VirtualServer hosts NGINX will break any attempt to establish a TLS connection.
-        # cert: ""
-        # The base64-encoded TLS key for every Ingress/VirtualServer host that has TLS enabled but no secret specified. If the parameter is not set, for such Ingress/VirtualServer hosts NGINX will break any attempt to establish a TLS connection.
-        # key: ""
-        secret: nginx/ii.nz-tls
-        # The secret with a TLS certificate and key for every Ingress/VirtualServer host that has TLS enabled but no secret specified. The value must follow the following format: <namespace>/<name>. Used as an alternative to specifying a certificate and key using controller.wildcardTLS.cert and controller.wildcardTLS.key parameters.
+    extraArgs:
+      default-ssl-certificate: "ingress-nginx/ii.nz-tls"
