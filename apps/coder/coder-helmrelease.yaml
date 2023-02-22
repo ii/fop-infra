@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: coder
-      version: "0.17.3"
+      version: "0.17.4"
       sourceRef:
         kind: HelmRepository
         name: coder-v2
@@ -20,6 +20,7 @@ spec:
     #   type: LoadBalancer
     #   loadBalancerIP: ""
     coder:
+      # ingressWildcardHost: "*-coder.ii.nz"
       service:
         # coder.service.enable -- Whether to create the Service object.
         # enable: true
@@ -34,9 +35,9 @@ spec:
               name: coder-db-url
               key: url
         - name: CODER_ACCESS_URL
-          value: "https://coder.ii.nz"
+          value: "https://code.ii.nz"
         - name: CODER_WILDCARD_ACCESS_URL
-          value: "*-coder.ii.nz"
+          value: "*.coder.ii.nz"
         - name: CODER_SWAGGER_ENABLE
           value: "true"
         - name: CODER_PROMETHEUS_ADDRESS
@@ -113,12 +114,14 @@ spec:
         #       name: coder-google
         #       key: secret
       ingress:
-        enable: true
+        enable: false
+        # This ingress part of the chart needs wildcard love!
         className: nginx
         tls:
           enable: true
-        host: "coder.ii.nz"
-        wildCardHost: "*-coder.ii.nz"
+          # wildcardSecretName:
+        host: "code.ii.nz"
+        wildCardHost: "*.coder.ii.nz"
         service:
           type: ClusterIP
         annotations:
