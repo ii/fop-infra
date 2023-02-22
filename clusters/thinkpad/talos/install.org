@@ -1,5 +1,9 @@
 #+title: Talos
-
+* TODO
+Fix
+https://www.talos.dev/v1.3/kubernetes-guides/network/deploying-cilium/
+To do so patch this into your machine configuration:
+inlineManifests
 * Flash via Etcher
 https://github.com/siderolabs/talos/releases/download/v1.3.3/talos-amd64.iso
 * Boot via USB
