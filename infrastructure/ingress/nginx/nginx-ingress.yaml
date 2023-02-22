@@ -30,5 +30,6 @@ spec:
         namespace: ingress-nginx
       interval: 12h
   values:
-    extraArgs:
-      default-ssl-certificate: "ingress-nginx/ii.nz-tls"
+    controller:
+      extraArgs:
+        default-ssl-certificate: "ingress-nginx/ii.nz-tls"
