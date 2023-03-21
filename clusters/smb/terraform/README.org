@@ -1,0 +1,38 @@
+#+title: Readme
+* do the deed
+** terraform init
+#+begin_src tmate :windows terraform
+terraform init
+#+end_src
+** terraform plan
+#+begin_src tmate :windows terraform
+terraform plan
+#+end_src
+** terraform apply
+#+begin_src tmate :windows terraform
+terraform apply -auto-approve
+#+end_src
+** terraform output talosconfig
+#+begin_src tmate :windows terraform
+terraform output -raw talosconfig > talos.config
+#+end_src
+** terraform output machineconfig
+#+begin_src tmate :windows terraform
+terraform output -raw machineconfig_controlplane > smb2.yaml
+#+end_src
+* Look at .envrc
+#+begin_src tmate :window cluster
+cat .envrc
+#+end_src
+* terraform clear
+#+begin_src tmate :window tf
+ls -la .
+#+end_src
+#+begin_src tmate :window tf
+rm tmate*log
+rm terraform.tfstate
+rm -rf .terraform
+rm -rf .terraform.lock.hcl
+rm smb2.yaml
+rm talos.config
+#+end_src
