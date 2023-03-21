@@ -16,10 +16,143 @@ terraform apply -auto-approve
 #+begin_src tmate :windows terraform
 terraform output -raw talosconfig > talos.config
 #+end_src
+** talosctl config merge
+#+begin_src tmate :windows talos
+talosctl config merge talos.config
+#+end_src
 ** terraform output machineconfig
 #+begin_src tmate :windows terraform
 terraform output -raw machineconfig_controlplane > smb2.yaml
 #+end_src
+** NOTE: Make sure blade is talos reset and waiting for apply-config
+** talosctl check disks
+#+begin_src shell
+talosctl disks -n 123.253.177.102 --insecure
+#+end_src
+
+#+RESULTS:
+#+begin_example
+DEV        MODEL              SERIAL   TYPE   UUID   WWID   MODALIAS      NAME   SIZE     BUS_PATH
+/dev/sda   INTEL SSDSC2BB60   -        SSD    -      -      scsi:t-0x00   -      600 GB   /pci0000:00/0000:00:1f.2/ata1/host0/target0:0:0/0:0:0:0/
+#+end_example
+** talos apply smb2.yaml
+#+begin_src tmate :window talos
+talosctl apply-config --nodes 123.253.177.102 --insecure --file smb2.yaml
+#+end_src
+** talosctl bootstrap
+#+begin_src tmate :windows talos
+talosctl bootstrap --nodes 123.253.177.102
+#+end_src
+** talosctl version
+#+begin_src shell
+talosctl version --nodes 123.253.177.102
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Client:
+	Tag:         v1.3.3
+	SHA:         c2cdf54a
+	Built:
+	Go version:  go1.19.4
+	OS/Arch:     darwin/arm64
+Server:
+	NODE:        123.253.177.102
+	Tag:         v1.3.1
+	SHA:         4469ad12
+	Built:
+	Go version:  go1.19.4
+	OS/Arch:     linux/amd64
+	Enabled:     RBAC
+#+end_example
+** talosctl stats
+#+begin_src shell
+talosctl stats --nodes 123.253.177.102
+#+end_src
+
+#+RESULTS:
+#+begin_example
+NODE              NAMESPACE   ID       MEMORY(MB)   CPU
+123.253.177.102   system      apid     33.35        963194000
+123.253.177.102   system      trustd   25.70        201055000
+#+end_example
+** talosctl service
+#+begin_src shell
+talosctl service --nodes 123.253.177.102
+#+end_src
+
+#+RESULTS:
+#+begin_example
+NODE              SERVICE      STATE     HEALTH   LAST CHANGE   LAST EVENT
+123.253.177.102   apid         Running   OK       5m49s ago     Health check successful
+123.253.177.102   containerd   Running   OK       5m56s ago     Health check successful
+123.253.177.102   cri          Running   OK       4m55s ago     Health check successful
+123.253.177.102   etcd         Running   OK       2m35s ago     Health check successful
+123.253.177.102   kubelet      Running   OK       4m33s ago     Health check successful
+123.253.177.102   machined     Running   OK       6m5s ago      Health check successful
+123.253.177.102   trustd       Running   OK       4m54s ago     Health check successful
+123.253.177.102   udevd        Running   OK       4m58s ago     Health check successful
+#+end_example
+** talosctl time
+#+begin_src shell
+talosctl time --nodes 123.253.177.102
+#+end_src
+
+#+RESULTS:
+#+begin_example
+NODE              NTP-SERVER     NODE-TIME                                 NTP-SERVER-TIME
+123.253.177.102   pool.ntp.org   2023-03-21 00:45:47.908661091 +0000 UTC   2023-03-21 00:45:47.737290535 +0000 UTC
+#+end_example
+** talosctl processes
+#+begin_src shell
+talosctl processes --nodes 123.253.177.102
+#+end_src
+
+#+RESULTS:
+#+begin_example
+NODE             PID   STATE  THREADS  CPU-TIME  VIRTMEM  RESMEM  COMMAND
+123.253.177.102  2784  S      18       11.27     1.1 GB   318 MB  /usr/local/bin/kube-apiserver --admission-control-config-file=/system/config/kubernetes/kube-apiserver/admission-control-config.yaml --advertise-address=123.253.177.102 --allow-privileged=true --anonymous-auth=false --api-audiences=https://123.253.177.99:6443 --audit-log-maxage=30 --audit-log-maxbackup=10 --audit-log-maxsize=100 --audit-log-path=/var/log/audit/kube/kube-apiserver.log --audit-policy-file=/system/config/kubernetes/kube-apiserver/auditpolicy.yaml --authorization-mode=Node,RBAC --bind-address=0.0.0.0 --client-ca-file=/system/secrets/kubernetes/kube-apiserver/ca.crt --enable-admission-plugins=NodeRestriction --enable-bootstrap-token-auth=true --encryption-provider-config=/system/secrets/kubernetes/kube-apiserver/encryptionconfig.yaml --etcd-cafile=/system/secrets/kubernetes/kube-apiserver/etcd-client-ca.crt --etcd-certfile=/system/secrets/kubernetes/kube-apiserver/etcd-client.crt --etcd-keyfile=/system/secrets/kubernetes/kube-apiserver/etcd-client.key --etcd-servers=https://localhost:2379 --kubelet-client-certificate=/system/secrets/kubernetes/kube-apiserver/apiserver-kubelet-client.crt --kubelet-client-key=/system/secrets/kubernetes/kube-apiserver/apiserver-kubelet-client.key --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname --profiling=false --proxy-client-cert-file=/system/secrets/kubernetes/kube-apiserver/front-proxy-client.crt --proxy-client-key-file=/system/secrets/kubernetes/kube-apiserver/front-proxy-client.key --requestheader-allowed-names=front-proxy-client --requestheader-client-ca-file=/system/secrets/kubernetes/kube-apiserver/aggregator-ca.crt --requestheader-extra-headers-prefix=X-Remote-Extra- --requestheader-group-headers=X-Remote-Group --requestheader-username-headers=X-Remote-User --secure-port=6443 --service-account-issuer=https://123.253.177.99:6443 --service-account-key-file=/system/secrets/kubernetes/kube-apiserver/service-account.pub --service-account-signing-key-file=/system/secrets/kubernetes/kube-apiserver/service-account.key --service-cluster-ip-range=10.96.0.0/12 --tls-cert-file=/system/secrets/kubernetes/kube-apiserver/apiserver.crt --tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_128_GCM_SHA256 --tls-min-version=VersionTLS12 --tls-private-key-file=/system/secrets/kubernetes/kube-apiserver/apiserver.key
+123.253.177.102  1     S      16       97.74     897 MB   116 MB  /sbin/init
+123.253.177.102  2831  S      15       5.79      853 MB   111 MB  /usr/local/bin/kube-controller-manager --use-service-account-credentials --allocate-node-cidrs=true --authentication-kubeconfig=/system/secrets/kubernetes/kube-controller-manager/kubeconfig --authorization-kubeconfig=/system/secrets/kubernetes/kube-controller-manager/kubeconfig --bind-address=127.0.0.1 --cluster-cidr=10.244.0.0/16 --cluster-signing-cert-file=/system/secrets/kubernetes/kube-controller-manager/ca.crt --cluster-signing-key-file=/system/secrets/kubernetes/kube-controller-manager/ca.key --configure-cloud-routes=false --controllers=*,tokencleaner --kubeconfig=/system/secrets/kubernetes/kube-controller-manager/kubeconfig --leader-elect=true --profiling=false --root-ca-file=/system/secrets/kubernetes/kube-controller-manager/ca.crt --service-account-private-key-file=/system/secrets/kubernetes/kube-controller-manager/service-account.key --service-cluster-ip-range=10.96.0.0/12 --tls-min-version=VersionTLS13
+123.253.177.102  2436  S      21       4.45      2.4 GB   102 MB  /usr/local/bin/kubelet --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubeconfig --cert-dir=/var/lib/kubelet/pki --config=/etc/kubernetes/kubelet.yaml --container-runtime-endpoint=unix:///run/containerd/containerd.sock --hostname-override=smb2 --kubeconfig=/etc/kubernetes/kubeconfig-kubelet --node-ip=123.253.177.102
+123.253.177.102  1071  S      15       0.97      826 MB   75 MB   /apid --enable-rbac --enable-ext-key-usage-check
+123.253.177.102  2380  S      16       0.22      827 MB   72 MB   /trustd
+123.253.177.102  2334  S      21       37.02     790 MB   62 MB   /bin/containerd --address /run/containerd/containerd.sock --config /etc/cri/containerd.toml
+123.253.177.102  2900  S      17       3.41      785 MB   55 MB   /usr/local/bin/kube-scheduler --authentication-kubeconfig=/system/secrets/kubernetes/kube-scheduler/kubeconfig --authentication-tolerate-lookup-failure=false --authorization-kubeconfig=/system/secrets/kubernetes/kube-scheduler/kubeconfig --bind-address=127.0.0.1 --kubeconfig=/system/secrets/kubernetes/kube-scheduler/kubeconfig --leader-elect=true --profiling=false --tls-min-version=VersionTLS13
+123.253.177.102  1021  S      17       8.89      788 MB   49 MB   /bin/containerd --address /system/run/containerd/containerd.sock --state /system/run/containerd --root /system/var/lib/containerd
+123.253.177.102  2569  S      18       4.57      12 GB    48 MB   /usr/local/bin/etcd --advertise-client-urls=https://123.253.177.102:2379 --auto-tls=false --cert-file=/system/secrets/etcd/server.crt --client-cert-auth=true --data-dir=/var/lib/etcd --experimental-compact-hash-check-enabled=true --experimental-initial-corrupt-check=true --experimental-watch-progress-notify-interval=5s --initial-advertise-peer-urls=https://123.253.177.102:2380 --initial-cluster=smb2=https://123.253.177.102:2380 --initial-cluster-state=new --key-file=/system/secrets/etcd/server.key --listen-client-urls=https://0.0.0.0:2379 --listen-peer-urls=https://0.0.0.0:2380 --name=smb2 --peer-auto-tls=false --peer-cert-file=/system/secrets/etcd/peer.crt --peer-client-cert-auth=true --peer-key-file=/system/secrets/etcd/peer.key --peer-trusted-ca-file=/system/secrets/etcd/ca.crt --trusted-ca-file=/system/secrets/etcd/ca.crt
+123.253.177.102  2549  S      11       0.01      738 MB   11 MB   /bin/containerd-shim-runc-v2 -namespace system -id etcd -address /run/containerd/containerd.sock
+123.253.177.102  2416  S      11       0.04      738 MB   11 MB   /bin/containerd-shim-runc-v2 -namespace system -id kubelet -address /run/containerd/containerd.sock
+123.253.177.102  2635  S      12       0.04      738 MB   11 MB   /bin/containerd-shim-runc-v2 -namespace k8s.io -id 34d15e2f2966b344b81047ad2da6eeafaeed5c8a41a19104f60bcb51bff53929 -address /run/containerd/containerd.sock
+123.253.177.102  2608  S      12       0.03      738 MB   10 MB   /bin/containerd-shim-runc-v2 -namespace k8s.io -id dd0b48d808a7c919d2b7a962d31c892e425a269edfddee7f4c1f60527b031932 -address /run/containerd/containerd.sock
+123.253.177.102  1049  S      12       0.04      738 MB   9.9 MB  /bin/containerd-shim-runc-v2 -namespace system -id apid -address /system/run/containerd/containerd.sock
+123.253.177.102  2632  S      12       0.04      738 MB   9.9 MB  /bin/containerd-shim-runc-v2 -namespace k8s.io -id 194d179e16d3a3c326533968f9a14da1c45d072511fddd54d3bc28a0bfc0613a -address /run/containerd/containerd.sock
+123.253.177.102  2358  S      11       0.02      738 MB   9.4 MB  /bin/containerd-shim-runc-v2 -namespace system -id trustd -address /system/run/containerd/containerd.sock
+123.253.177.102  1109  S      1        0.23      1.5 MB   1.1 MB  /sbin/udevd --resolve-names=never
+123.253.177.102  2681  S      1        0.04      995 kB   4.1 kB  /pause
+123.253.177.102  2683  S      1        0.04      995 kB   4.1 kB  /pause
+123.253.177.102  2685  S      1        0.04      995 kB   4.1 kB  /pause
+#+end_example
+* Cluster
+#+begin_src tmate :window kubeconfig
+talosctl kubeconfig --nodes 123.253.177.102 ~/.kube/config
+#+end_src
+
+** kubectl get nodes
+#+begin_src shell
+kubectl get nodes
+#+end_src
+
+#+RESULTS:
+#+begin_example
+NAME   STATUS     ROLES           AGE     VERSION
+smb2   NotReady   control-plane   4m50s   v1.26.0
+#+end_example
+** kubeclt untaint
+#+begin_src tmate :window kubeconfig
+kubectl describe node smb2
+#+end_src
+
 * Look at .envrc
 #+begin_src tmate :window cluster
 cat .envrc
