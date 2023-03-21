@@ -48,21 +48,22 @@ resource "talos_machine_secrets" "machine_secrets" {}
 
 
 resource "talos_machine_configuration_controlplane" "machineconfig_cp" {
+  # count            = 4 # create four similar EC2 instances
   cluster_name     = var.cluster_name
   cluster_endpoint = var.cluster_endpoint
   machine_secrets  = talos_machine_secrets.machine_secrets.machine_secrets
   docs_enabled     = false
   examples_enabled = false
+  # hostname: smb${count.index}
   config_patches = [
     <<-EOT
     machine:
        network:
-         hostname: smb2
          interfaces:
            - interface: eth0
              dhcp: true
              vip:
-               ip: 192.168.1.222
+               ip: 123.253.177.99
        install:
          diskSelector:
            busPath: /pci0000:00/0000:00:1f.2/ata1/host0/target0:0:0/0:0:0:0/
@@ -71,24 +72,24 @@ resource "talos_machine_configuration_controlplane" "machineconfig_cp" {
     <<-EOT
     machine:
        certSANs:
-         - k8s.hachbach.nz
-         - smb1
-         - smb2
-         - smb3
-         - smb4
-         - smb5
-         - smb6
-         - smb7
-         - smb8
-         - 192.168.1.222
-         - 192.168.1.161
-         - 192.168.1.162
-         - 192.168.1.163
-         - 192.168.1.164
-         - 192.168.1.165
-         - 192.168.1.166
-         - 192.168.1.167
-         - 192.168.1.168
+         - k8s.fop.nz
+         - smb1.fop.nz
+         - smb2.fop.nz
+         - smb3.fop.nz
+         - smb4.fop.nz
+         - smb5.fop.nz
+         - smb6.fop.nz
+         - smb7.fop.nz
+         - smb8.fop.nz
+         - 123.253.177.99
+         - 123.253.177.101
+         - 123.253.177.102
+         - 123.253.177.103
+         - 123.253.177.104
+         - 123.253.177.105
+         - 123.253.177.106
+         - 123.253.177.107
+         - 123.253.177.108
        kubelet:
          extraMounts:
          - destination: /var/local-path-provisioner
@@ -109,14 +110,24 @@ resource "talos_machine_configuration_controlplane" "machineconfig_cp" {
            name: none
        apiServer:
          certSANs:
-           - k8s.hackbach.nz
-           - smb1
-           - smb2
-           - smb3
-           - 192.168.1.222
-           - 192.168.1.161
-           - 192.168.1.162
-           - 192.168.1.163
+           - k8s.fop.nz
+           - smb1.fop.nz
+           - smb2.fop.nz
+           - smb3.fop.nz
+           - smb4.fop.nz
+           - smb5.fop.nz
+           - smb6.fop.nz
+           - smb7.fop.nz
+           - smb8.fop.nz
+           - 123.253.177.100
+           - 123.253.177.101
+           - 123.253.177.102
+           - 123.253.177.103
+           - 123.253.177.104
+           - 123.253.177.105
+           - 123.253.177.106
+           - 123.253.177.107
+           - 123.253.177.108
        # Going to try and add this via patch so we can inline the rendered cilium helm template
        inlineManifests:
          - name: cilium

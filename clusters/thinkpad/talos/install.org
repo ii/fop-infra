@@ -190,3 +190,7 @@ Need to untaint
 #+begin_src shell
 kubectl taint node thinkpad node-role.kubernetes.io/control-plane:NoSchedule-
 #+end_src
+* LEARNING
+#+begin_src shell
+talosctl -n 192.168.1.162 reset --graceful=false
+#+end_src

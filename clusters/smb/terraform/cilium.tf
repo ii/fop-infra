@@ -19,7 +19,7 @@ data "helm_template" "cilium" {
     ipam:
       mode: kubernetes
     kubeProxyReplacement: strict
-    k8sServiceHost: 192.168.1.222
+    k8sServiceHost: 123.253.177.99
     k8sServicePort: 6443
     EOT
   ]

@@ -35,7 +35,7 @@ spec:
               name: coder-db-url
               key: url
         - name: CODER_ACCESS_URL
-          value: "https://code.ii.nz"
+          value: "https://coder.ii.nz"
         - name: CODER_WILDCARD_ACCESS_URL
           value: "*.coder.ii.nz"
         - name: CODER_SWAGGER_ENABLE
@@ -120,7 +120,7 @@ spec:
         tls:
           enable: true
           # wildcardSecretName:
-        host: "code.ii.nz"
+        host: "coder..ii.nz"
         wildCardHost: "*.coder.ii.nz"
         service:
           type: ClusterIP
