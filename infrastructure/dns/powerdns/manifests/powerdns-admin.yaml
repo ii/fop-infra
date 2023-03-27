@@ -46,6 +46,18 @@ spec:
       labels:
         powerdns: admin
     spec:
+      initContainers:
+        # As root, let's chown the data folder correctly
+        # FIXME There is likely a cleaner way
+        - name: data
+          image: powerdns/pdns-auth-47:4.7.3
+          command: ["sh", "-c", "chown -R pda:pda /data"]
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+          volumeMounts:
+            - mountPath: /data
+              name: powerdns-admin
       containers:
         - env:
             - name: SECRET_KEY
