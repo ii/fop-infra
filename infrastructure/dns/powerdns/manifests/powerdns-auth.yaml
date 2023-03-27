@@ -80,6 +80,16 @@ spec:
         runAsGroup: 0
       #   fsGroup: 2000
       restartPolicy: Always
+      initContainers:
+        # This image ensures the pdns.sqlite3 db is created
+        - name: auth
+          image: powerdns/pdns-auth-47:4.7.3
+          command:
+            [
+              "sh",
+              "-c",
+              "if [ ! -e /var/lib/powerdns/pdns.sqlite3 ]; then sqlite3 /var/lib/powerdns/pdns.sqlite3 < /usr/local/share/doc/pdns/schema.sqlite3.sql ; fi",
+            ]
       containers:
         - name: auth
           image: powerdns/pdns-auth-47:4.7.3
