@@ -1,0 +1,603 @@
+#+title: Breadcrumb
+
+* flux
+** bootstrap
+#+begin_src tmate :window install
+flux bootstrap github   --owner=ii   --repository=fop-infra   --branch=canon   --path=clusters/smba
+#+end_src
+*** monitoring bootstrap
+#+begin_src tmate :window watch
+watch kubectl -n flux-system get pods,services,deployments,replicasets,helmcharts,helmreleases,kustomizations,gitrepositories
+#+end_src
+
+** logs
+#+begin_src tmate :window logs
+flux logs -f
+#+end_src
+** git flux-system
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+flux reconcile source git flux-system
+#+end_src
+
+#+RESULTS:
+#+begin_example
+► annotating GitRepository flux-system in flux-system namespace
+✔ GitRepository annotated
+◎ waiting for GitRepository reconciliation
+✔ fetched revision canon/7cfc03e67a8d03273cbe83bdd879b7e5af3e98e0
+#+end_example
+** kustomizations
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+flux get all
+#+end_src
+
+#+RESULTS:
+#+begin_example
+NAME                     	REVISION     	SUSPENDED	READY	MESSAGE
+gitrepository/flux-system	canon/7cfc03e	False    	True 	stored artifact for revision 'canon/7cfc03e67a8d03273cbe83bdd879b7e5af3e98e0'
+
+NAME                     	REVISION     	SUSPENDED	READY	MESSAGE
+kustomization/flux-system	canon/7cfc03e	False    	True 	Applied revision: canon/7cfc03e
+kustomization/infra      	canon/7cfc03e	False    	True 	Applied revision: canon/7cfc03e
+
+#+end_example
+
+#+begin_src tmate :window flux
+flux reconcile source git flux-system
+#+end_src
+* ns
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+kubectl get ns
+#+end_src
+
+#+RESULTS:
+#+begin_example
+NAME              STATUS   AGE
+cilium-test       Active   4d16h
+default           Active   5d15h
+flux-system       Active   13h
+kube-node-lease   Active   5d15h
+kube-public       Active   5d15h
+kube-system       Active   5d15h
+metallb-system    Active   16h
+powerdns          Active   12h
+rook-ceph         Active   3d17h
+#+end_example
+
+* metallb
+** api-resources
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+kubectl api-resources -o name  | grep metallb | sort
+#+end_src
+** all
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+kubectl -n metallb-system get all
+#+end_src
+
+#+RESULTS:
+#+begin_example
+NAME                                      READY   STATUS    RESTARTS   AGE
+pod/metallb-controller-777d84cdd5-svqtj   1/1     Running   0          13h
+pod/metallb-speaker-8j6w5                 1/1     Running   0          13h
+pod/metallb-speaker-jlqs2                 1/1     Running   0          13h
+pod/metallb-speaker-mnhn4                 1/1     Running   0          13h
+
+NAME                              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+service/metallb-webhook-service   ClusterIP   10.108.139.104   <none>        443/TCP   13h
+
+NAME                             DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+daemonset.apps/metallb-speaker   3         3         3       3            3           kubernetes.io/os=linux   13h
+
+NAME                                 READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/metallb-controller   1/1     1            1           13h
+
+NAME                                            DESIRED   CURRENT   READY   AGE
+replicaset.apps/metallb-controller-777d84cdd5   1         1         1       13h
+#+end_example
+
+** ipaddresspools
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n" :wrap "SRC yaml"
+kubectl -n metallb-system get ipaddresspools -o yaml
+#+end_src
+
+#+RESULTS:
+#+begin_SRC yaml
+apiVersion: v1
+items:
+- apiVersion: metallb.io/v1beta1
+  kind: IPAddressPool
+  metadata:
+    creationTimestamp: "2023-03-27T04:44:01Z"
+    generation: 1
+    labels:
+      kustomize.toolkit.fluxcd.io/name: infra
+      kustomize.toolkit.fluxcd.io/namespace: flux-system
+    name: default
+    namespace: metallb-system
+    resourceVersion: "1105395"
+    uid: e50ae321-6b86-4ca6-8cc2-438c9a39404b
+  spec:
+    addresses:
+    - 123.253.177.110-123.253.177.149
+    autoAssign: true
+    avoidBuggyIPs: false
+kind: List
+metadata:
+  resourceVersion: ""
+#+end_SRC
+
+* powerdns
+** secret creation
+#+begin_src tmate :window pdns-secrets
+kubectl create secret generic powerdns -n powerdns \
+    --from-literal=api_key=$PDNS_API_KEY \
+    --from-literal=admin_user=$PDNS_ADMIN_USER \
+  --from-literal=admin_password=$PDNS_ADMIN_PASSWORD
+#+end_src
+
+** all
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+kubectl -n powerdns get all
+#+end_src
+
+#+RESULTS:
+#+begin_example
+NAME                         READY   STATUS             RESTARTS         AGE
+pod/admin-7cc8f57878-sgdzf   0/1     CrashLoopBackOff   170 (108s ago)   13h
+pod/auth-866c7f9f8-k5gc7     0/1     CrashLoopBackOff   5 (31s ago)      3m22s
+
+NAME            TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)                                    AGE
+service/admin   ClusterIP      10.110.2.23    <none>        80/TCP                                     13h
+service/auth    LoadBalancer   10.108.49.99   <pending>     53:32724/TCP,53:32724/UDP,8081:30366/TCP   13h
+
+NAME                    READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/admin   0/1     1            0           13h
+deployment.apps/auth    0/1     1            0           13h
+
+NAME                               DESIRED   CURRENT   READY   AGE
+replicaset.apps/admin-7cc8f57878   1         1         0       13h
+replicaset.apps/auth-657dc5f59d    0         0         0       13h
+replicaset.apps/auth-866c7f9f8     1         1         0       3m22s
+#+end_example
+* Debugging
+** Reconcile
+*** git push to repo
+#+name: source check
+#+begin_src shell
+git remote -v
+git push
+git log HEAD -1
+#+end_src
+
+#+RESULTS: source check
+#+begin_example
+origin	git@github.com:ii/fop-infra.git (fetch)
+origin	git@github.com:ii/fop-infra.git (push)
+commit f61468073f3537565c77cc39554eccc54011a19c
+Author: Hippie Hacker <hh@ii.coop>
+Date:   Tue Mar 28 09:02:52 2023 +1300
+
+    Sleep for debug in initc for pdns-admin
+#+end_example
+
+*** flux reconcile git source from repo
+#+name: reconcile command
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:"
+flux reconcile source git flux-system -n flux-system
+#+end_src
+
+#+RESULTS: reconcile command
+#+begin_example
+► annotating GitRepository flux-system in flux-system namespace
+✔ GitRepository annotated
+◎ waiting for GitRepository reconciliation
+✔ fetched revision canon/316105428656b471c04a22f6e97407002af00b2c
+#+end_example
+
+*** flux reconcile kustomization
+#+name: reconcile customization
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:"
+flux -n flux-system reconcile kustomization flux-system
+#+end_src
+
+#+RESULTS: reconcile customization
+#+begin_example
+► annotating Kustomization flux-system in flux-system namespace
+✔ Kustomization annotated
+◎ waiting for Kustomization reconciliation
+✔ applied revision canon/316105428656b471c04a22f6e97407002af00b2c
+#+end_example
+
+*** flux kustomization
+#+name: kustomizations
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:"
+kubectl -n flux-system get kustomizations flux-system
+#+end_src
+
+#+RESULTS: kustomizations
+#+begin_example
+NAME          AGE   READY   STATUS
+flux-system   14h   True    Applied revision: canon/f02037e58370c4bfd73877640b73837686aff461
+#+end_example
+** powerdns auth pods CrashLoopBackOff after adding PVCs
+It seems our deployment/pod volume mounts don't have the right permissions.
+Looking at the Dockerfile it looks like user/uid pns/953 is added and permissions are added to the container file system, but when we override that mount point pdns/953 no longer has ownership/permissions.
+
+TLDR: We added an sqlite3 init container in https://github.com/ii/fop-infra/commit/f02037e58370c4bfd73877640b73837686aff461
+*** logs from auth deployment
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+kubectl -n powerdns logs deployments/auth
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Created /etc/powerdns/pdns.d/_api.conf with content:
+webserver
+api
+api-key=hackbach
+webserver-address=0.0.0.0
+webserver-allow-from=0.0.0.0/0
+webserver-password=hackbach
+
+
+Mar 27 17:47:37 Loading '/usr/local/lib/pdns/libgsqlite3backend.so'
+Mar 27 17:47:37 This is a standalone pdns
+Mar 27 17:47:37 Listening on controlsocket in '/var/run/pdns/pdns.controlsocket'
+Mar 27 17:47:37 UDP server bound to 0.0.0.0:53
+Mar 27 17:47:37 UDP server bound to [::]:53
+Mar 27 17:47:37 TCP server bound to 0.0.0.0:53
+Mar 27 17:47:37 TCP server bound to [::]:53
+Mar 27 17:47:37 PowerDNS Authoritative Server 4.7.3 (C) 2001-2022 PowerDNS.COM BV
+Mar 27 17:47:37 Using 64-bits mode. Built using gcc 10.2.1 20210110 on Dec  9 2022 10:41:42 by root@97bdec5dabf4.
+Mar 27 17:47:37 PowerDNS comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it according to the terms of the GPL version 2.
+Mar 27 17:47:37 [webserver] Listening for HTTP requests on 0.0.0.0:8081
+Mar 27 17:47:38 Polled security status of version 4.7.3 at startup, no known issues reported: OK
+Mar 27 17:47:38 gsqlite3: connection failed: SQLite database '/var/lib/powerdns/pdns.sqlite3' does not exist yet
+Mar 27 17:47:38 Caught an exception instantiating a backend: Unable to launch gsqlite3 connection: SQLite database '/var/lib/powerdns/pdns.sqlite3' does not exist yet
+Mar 27 17:47:38 Cleaning up
+Mar 27 17:47:38 PDNSException while filling the zone cache: Unable to launch gsqlite3 connection: SQLite database '/var/lib/powerdns/pdns.sqlite3' does not exist yet
+#+end_example
+
+*** Focusing on the error
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+kubectl -n powerdns logs deployments/auth | grep pdns.sqlite3
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Mar 27 17:42:27 gsqlite3: connection failed: SQLite database '/var/lib/powerdns/pdns.sqlite3' does not exist yet
+Mar 27 17:42:27 Caught an exception instantiating a backend: Unable to launch gsqlite3 connection: SQLite database '/var/lib/powerdns/pdns.sqlite3' does not exist yet
+Mar 27 17:42:27 PDNSException while filling the zone cache: Unable to launch gsqlite3 connection: SQLite database '/var/lib/powerdns/pdns.sqlite3' does not exist yet
+#+end_example
+*** Likley a permission error on creating the pdns.sqlite3 file
+- What Dockerfile is used to define the container?
+- What UID does it start as?
+- What does the helm chart do?
+  I couldn't find a helm chart that used raw upstream... or one that was simple enough to just use an sqlite3 file for the DB.
+*** Dockerfile-auth
+From https://github.com/PowerDNS/pdns/blob/master/Dockerfile-auth#L91-L97
+#+begin_src dockerfile
+# Work with pdns user - not root
+RUN adduser --system --disabled-password --disabled-login --no-create-home --group pdns --uid 953
+RUN chown pdns:pdns /var/run/pdns /var/lib/powerdns /etc/powerdns/pdns.d /etc/powerdns/templates.d
+USER pdns
+
+# Set up database - this needs to be smarter
+RUN sqlite3 /var/lib/powerdns/pdns.sqlite3 < /usr/local/share/doc/pdns/schema.sqlite3.sql
+#+end_src
+*** pdns/dockerdata
+
+https://github.com/PowerDNS/pdns/tree/master/dockerdata
+
+Configuration and startup.
+*** pdns/dockerdata/pdns.conf
+https://github.com/PowerDNS/pdns/blob/master/dockerdata/pdns.conf#L4
+#+begin_src conf
+gsqlite3-database=/var/lib/powerdns/pdns.sqlite3
+include-dir=/etc/powerdns/pdns.d
+#+end_src
+*** entrypoint
+https://github.com/PowerDNS/pdns/blob/master/dockerdata/startup.py
+*** logs from auth deployment after init container
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+kubectl -n powerdns logs deployments/auth -c sqlite3
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Found 2 pods, using pod/auth-866c7f9f8-k5gc7
+#+end_example
+
+** powerdns admin pods CrashLoopBackOff after adding PVCs
+It seems our deployment/pod volume mounts don't have the right permissions.
+*** logs from admin deployment
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+kubectl -n powerdns logs deployments/admin
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 2338, in _wrap_pool_connect
+    return fn()
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/pool/base.py", line 304, in unique_connection
+    return _ConnectionFairy._checkout(self)
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/pool/base.py", line 778, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/pool/base.py", line 495, in checkout
+    rec = pool._do_get()
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/pool/impl.py", line 239, in _do_get
+    return self._create_connection()
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/pool/base.py", line 309, in _create_connection
+    return _ConnectionRecord(self)
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/pool/base.py", line 440, in __init__
+    self.__connect(first_connect_check=True)
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/pool/base.py", line 661, in __connect
+    pool.logger.debug("Error on connect(): %s", e)
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/util/langhelpers.py", line 68, in __exit__
+    compat.raise_(
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/util/compat.py", line 182, in raise_
+    raise exception
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/pool/base.py", line 656, in __connect
+    connection = pool._invoke_creator(self)
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/engine/strategies.py", line 114, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/engine/default.py", line 493, in connect
+    return self.dbapi.connect(*cargs, **cparams)
+sqlite3.OperationalError: unable to open database file
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/bin/flask", line 8, in <module>
+    sys.exit(main())
+  File "/usr/lib/python3.8/site-packages/flask/cli.py", line 967, in main
+    cli.main(args=sys.argv[1:], prog_name="python -m flask" if as_module else None)
+  File "/usr/lib/python3.8/site-packages/flask/cli.py", line 586, in main
+    return super(FlaskGroup, self).main(*args, **kwargs)
+  File "/usr/lib/python3.8/site-packages/click/core.py", line 1055, in main
+    rv = self.invoke(ctx)
+  File "/usr/lib/python3.8/site-packages/click/core.py", line 1657, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "/usr/lib/python3.8/site-packages/click/core.py", line 1657, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "/usr/lib/python3.8/site-packages/click/core.py", line 1404, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/usr/lib/python3.8/site-packages/click/core.py", line 760, in invoke
+    return __callback(*args, **kwargs)
+  File "/usr/lib/python3.8/site-packages/click/decorators.py", line 26, in new_func
+    return f(get_current_context(), *args, **kwargs)
+  File "/usr/lib/python3.8/site-packages/flask/cli.py", line 426, in decorator
+    return __ctx.invoke(f, *args, **kwargs)
+  File "/usr/lib/python3.8/site-packages/click/core.py", line 760, in invoke
+    return __callback(*args, **kwargs)
+  File "/usr/lib/python3.8/site-packages/flask_migrate/cli.py", line 134, in upgrade
+    _upgrade(directory, revision, sql, tag, x_arg)
+  File "/usr/lib/python3.8/site-packages/flask_migrate/__init__.py", line 96, in wrapped
+    f(*args, **kwargs)
+  File "/usr/lib/python3.8/site-packages/flask_migrate/__init__.py", line 271, in upgrade
+    command.upgrade(config, revision, sql=sql, tag=tag)
+  File "/usr/lib/python3.8/site-packages/alembic/command.py", line 322, in upgrade
+    script.run_env()
+  File "/usr/lib/python3.8/site-packages/alembic/script/base.py", line 569, in run_env
+    util.load_python_file(self.dir, "env.py")
+  File "/usr/lib/python3.8/site-packages/alembic/util/pyfiles.py", line 94, in load_python_file
+    module = load_module_py(module_id, path)
+  File "/usr/lib/python3.8/site-packages/alembic/util/pyfiles.py", line 110, in load_module_py
+    spec.loader.exec_module(module)  # type: ignore
+  File "<frozen importlib._bootstrap_external>", line 843, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "migrations/env.py", line 88, in <module>
+    run_migrations_online()
+  File "migrations/env.py", line 72, in run_migrations_online
+    connection = engine.connect()
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 2265, in connect
+    return self._connection_cls(self, **kwargs)
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 104, in __init__
+    else engine.raw_connection()
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 2371, in raw_connection
+    return self._wrap_pool_connect(
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 2341, in _wrap_pool_connect
+    Connection._handle_dbapi_exception_noconnection(
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1583, in _handle_dbapi_exception_noconnection
+    util.raise_(
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/util/compat.py", line 182, in raise_
+    raise exception
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 2338, in _wrap_pool_connect
+    return fn()
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/pool/base.py", line 304, in unique_connection
+    return _ConnectionFairy._checkout(self)
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/pool/base.py", line 778, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/pool/base.py", line 495, in checkout
+    rec = pool._do_get()
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/pool/impl.py", line 239, in _do_get
+    return self._create_connection()
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/pool/base.py", line 309, in _create_connection
+    return _ConnectionRecord(self)
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/pool/base.py", line 440, in __init__
+    self.__connect(first_connect_check=True)
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/pool/base.py", line 661, in __connect
+    pool.logger.debug("Error on connect(): %s", e)
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/util/langhelpers.py", line 68, in __exit__
+    compat.raise_(
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/util/compat.py", line 182, in raise_
+    raise exception
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/pool/base.py", line 656, in __connect
+    connection = pool._invoke_creator(self)
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/engine/strategies.py", line 114, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "/usr/lib/python3.8/site-packages/sqlalchemy/engine/default.py", line 493, in connect
+    return self.dbapi.connect(*cargs, **cparams)
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) unable to open database file
+(Background on this error at: http://sqlalche.me/e/13/e3q8)
+#+end_example
+
+*** Focusing on the error
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+kubectl -n powerdns logs deployments/admin | grep sqlite3
+#+end_src
+
+#+RESULTS:
+#+begin_example
+sqlite3.OperationalError: unable to open database file
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) unable to open database file
+#+end_example
+*** Likley a permission error on creating the sqlite3 file
+- What Dockerfile is used to define the container?
+- What UID does it start as?
+- What does the helm chart do?
+  I couldn't find a helm chart that used raw upstream... or one that was simple enough to just use an sqlite3 file for the DB.
+*** Dockerfile
+From https://github.com/PowerDNS-Admin/PowerDNS-Admin/blob/master/docker/Dockerfile#L89-L93
+#+begin_src dockerfile
+ENV FLASK_APP=/app/powerdnsadmin/__init__.py \
+    USER=pda
+#...
+RUN chown ${USER}:${USER} ./configs /app && \
+    cat ./powerdnsadmin/default_config.py ./configs/docker_config.py > ./powerdnsadmin/docker_config.py
+
+EXPOSE 80/tcp
+USER ${USER}
+#+end_src
+*** logs from auth deployment after init container
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+kubectl -n powerdns logs deployments/auth
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Defaulted container "auth" out of: auth, sqlite3 (init)
+Created /etc/powerdns/pdns.d/_api.conf with content:
+webserver
+api
+api-key=hackbach
+webserver-address=0.0.0.0
+webserver-allow-from=0.0.0.0/0
+webserver-password=hackbach
+
+
+Mar 27 19:46:02 Loading '/usr/local/lib/pdns/libgsqlite3backend.so'
+Mar 27 19:46:02 This is a standalone pdns
+Mar 27 19:46:02 Listening on controlsocket in '/var/run/pdns/pdns.controlsocket'
+Mar 27 19:46:02 UDP server bound to 0.0.0.0:53
+Mar 27 19:46:02 UDP server bound to [::]:53
+Mar 27 19:46:02 TCP server bound to 0.0.0.0:53
+Mar 27 19:46:02 TCP server bound to [::]:53
+Mar 27 19:46:02 PowerDNS Authoritative Server 4.7.3 (C) 2001-2022 PowerDNS.COM BV
+Mar 27 19:46:02 Using 64-bits mode. Built using gcc 10.2.1 20210110 on Dec  9 2022 10:41:42 by root@97bdec5dabf4.
+Mar 27 19:46:02 PowerDNS comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it according to the terms of the GPL version 2.
+Mar 27 19:46:02 [webserver] Listening for HTTP requests on 0.0.0.0:8081
+Mar 27 19:46:02 Polled security status of version 4.7.3 at startup, no known issues reported: OK
+Mar 27 19:46:02 Creating backend connection for TCP
+Mar 27 19:46:02 About to create 3 backend threads for UDP
+Mar 27 19:46:02 Done launching threads, ready to distribute questions
+#+end_example
+
+* Footnotes
+** api-resources
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+kubectl api-resources -o name
+#+end_src
+
+#+RESULTS:
+#+begin_example
+bindings
+componentstatuses
+configmaps
+endpoints
+events
+limitranges
+namespaces
+nodes
+persistentvolumeclaims
+persistentvolumes
+pods
+podtemplates
+replicationcontrollers
+resourcequotas
+secrets
+serviceaccounts
+services
+mutatingwebhookconfigurations.admissionregistration.k8s.io
+validatingwebhookconfigurations.admissionregistration.k8s.io
+customresourcedefinitions.apiextensions.k8s.io
+apiservices.apiregistration.k8s.io
+controllerrevisions.apps
+daemonsets.apps
+deployments.apps
+replicasets.apps
+statefulsets.apps
+tokenreviews.authentication.k8s.io
+localsubjectaccessreviews.authorization.k8s.io
+selfsubjectaccessreviews.authorization.k8s.io
+selfsubjectrulesreviews.authorization.k8s.io
+subjectaccessreviews.authorization.k8s.io
+horizontalpodautoscalers.autoscaling
+cronjobs.batch
+jobs.batch
+cephblockpoolradosnamespaces.ceph.rook.io
+cephblockpools.ceph.rook.io
+cephbucketnotifications.ceph.rook.io
+cephbuckettopics.ceph.rook.io
+cephclients.ceph.rook.io
+cephclusters.ceph.rook.io
+cephfilesystemmirrors.ceph.rook.io
+cephfilesystems.ceph.rook.io
+cephfilesystemsubvolumegroups.ceph.rook.io
+cephnfses.ceph.rook.io
+cephobjectrealms.ceph.rook.io
+cephobjectstores.ceph.rook.io
+cephobjectstoreusers.ceph.rook.io
+cephobjectzonegroups.ceph.rook.io
+cephobjectzones.ceph.rook.io
+cephrbdmirrors.ceph.rook.io
+certificatesigningrequests.certificates.k8s.io
+ciliumclusterwidenetworkpolicies.cilium.io
+ciliumendpoints.cilium.io
+ciliumexternalworkloads.cilium.io
+ciliumidentities.cilium.io
+ciliumloadbalancerippools.cilium.io
+ciliumnetworkpolicies.cilium.io
+ciliumnodeconfigs.cilium.io
+ciliumnodes.cilium.io
+leases.coordination.k8s.io
+endpointslices.discovery.k8s.io
+events.events.k8s.io
+flowschemas.flowcontrol.apiserver.k8s.io
+prioritylevelconfigurations.flowcontrol.apiserver.k8s.io
+helmreleases.helm.toolkit.fluxcd.io
+kustomizations.kustomize.toolkit.fluxcd.io
+addresspools.metallb.io
+bfdprofiles.metallb.io
+bgpadvertisements.metallb.io
+bgppeers.metallb.io
+communities.metallb.io
+ipaddresspools.metallb.io
+l2advertisements.metallb.io
+ingressclasses.networking.k8s.io
+ingresses.networking.k8s.io
+networkpolicies.networking.k8s.io
+runtimeclasses.node.k8s.io
+alerts.notification.toolkit.fluxcd.io
+providers.notification.toolkit.fluxcd.io
+receivers.notification.toolkit.fluxcd.io
+objectbucketclaims.objectbucket.io
+objectbuckets.objectbucket.io
+poddisruptionbudgets.policy
+clusterrolebindings.rbac.authorization.k8s.io
+clusterroles.rbac.authorization.k8s.io
+rolebindings.rbac.authorization.k8s.io
+roles.rbac.authorization.k8s.io
+priorityclasses.scheduling.k8s.io
+buckets.source.toolkit.fluxcd.io
+gitrepositories.source.toolkit.fluxcd.io
+helmcharts.source.toolkit.fluxcd.io
+helmrepositories.source.toolkit.fluxcd.io
+ocirepositories.source.toolkit.fluxcd.io
+csidrivers.storage.k8s.io
+csinodes.storage.k8s.io
+csistoragecapacities.storage.k8s.io
+storageclasses.storage.k8s.io
+volumeattachments.storage.k8s.io
+#+end_example
