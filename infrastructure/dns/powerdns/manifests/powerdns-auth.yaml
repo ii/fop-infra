@@ -92,6 +92,13 @@ spec:
             - name: PDNS_AUTH_API_KEY
               value: hackbach
           resources: {}
+          volumeMounts:
+            - mountPath: /var/lib/powerdns
+              name: powerdns-auth
+      volumes:
+        - name: powerdns-auth
+          persistentVolumeClaim:
+            claimName: powerdns-auth
           # lifeCycle:
           # from  https://github.com/aescanero/helm-charts/blob/76fcfc3de2db248acaa73c9a1c7572c19bf96504/charts/powerdns/templates/powerdns-deployment.yaml#L36-L42
           # postStart:
@@ -124,3 +131,15 @@ spec:
           #           else sleep 1
           #           fi
           #         done
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: powerdns-auth
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  # storageClassName: ceph-block

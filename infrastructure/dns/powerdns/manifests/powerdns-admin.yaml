@@ -67,7 +67,7 @@ spec:
             - name: PDNS_ZONES
               value: |-
                 ii.nz
-                hackbach.nz
+                fop.nz
           image: powerdnsadmin/pda-legacy:v0.3.0
           name: admin
           ports:
@@ -77,9 +77,9 @@ spec:
             exec:
               command: ["/bin/sh", "-c", "nc -vz 127.0.0.1 80 2>/dev/null"]
             initialDelaySeconds: 80
-          # volumeMounts:
-          #   - mountPath: /data
-          #     name: powerdns-admin-data
+          volumeMounts:
+            - mountPath: /data
+              name: powerdns-admin
           resources: {}
           # lifecycle:
           #   postStart:
@@ -124,10 +124,10 @@ spec:
           #   for declared_domain in os.environ['PDNS_DOMAINS'].split(' '):
           #      db.session.add(Domain(name=declared_domain))
       restartPolicy: Always
-      # volumes:
-      #   - name: powerdns-admin-data
-      #     persistentVolumeClaim:
-      #       claimName: powerdns-admin-data
+      volumes:
+        - name: powerdns-admin
+          persistentVolumeClaim:
+            claimName: powerdns-admin
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -155,3 +155,15 @@ spec:
                 name: admin
                 port:
                   number: 80
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: powerdns-admin
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  # storageClassName: ceph-block
