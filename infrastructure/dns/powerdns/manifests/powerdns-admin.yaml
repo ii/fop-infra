@@ -51,7 +51,7 @@ spec:
         # FIXME There is likely a cleaner way
         - name: data
           image: powerdns/pdns-auth-47:4.7.3
-          command: ["sh", "-c", "chown -R pda:pda /data"]
+          command: ["sh", "-c", "sleep 99999 ; chown -R pda:pda /data"]
           securityContext:
             runAsUser: 0
             runAsGroup: 0
