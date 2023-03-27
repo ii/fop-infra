@@ -82,7 +82,7 @@ spec:
       restartPolicy: Always
       initContainers:
         # This image ensures the pdns.sqlite3 db is created
-        - name: auth
+        - name: sqlite3
           image: powerdns/pdns-auth-47:4.7.3
           command:
             [
