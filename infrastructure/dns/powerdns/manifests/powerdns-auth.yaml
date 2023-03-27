@@ -84,22 +84,11 @@ spec:
         # This image ensures the pdns.sqlite3 db is created
         - name: sqlite3
           image: powerdns/pdns-auth-47:4.7.3
-          command: [
+          command:
+            [
               "sh",
               "-c",
-              "
-              set -e
-              set -x
-              if [ ! -e /var/lib/powerdns/pdns.sqlite3 ]
-              then
-              echo Creating /var/lib/powerdns.sqlite3
-              sqlite3 /var/lib/powerdns/pdns.sqlite3 \
-              < /usr/local/share/doc/pdns/schema.sqlite3.sql
-              else
-              echo Existing /var/lib/powerdns.sqlite3
-              fi
-              ls -lah /var/lib/powerdns.sqlite3
-              ",
+              "set -e ; set -x ; if [ ! -e /var/lib/powerdns/pdns.sqlite3 ] ; then echo Creating /var/lib/powerdns/pdns.sqlite3 ; sqlite3 /var/lib/powerdns/pdns.sqlite3 < /usr/local/share/doc/pdns/schema.sqlite3.sql ; else echo Existing /var/lib/powerdns/pdns.sqlite3 ; fi ; ls -lah /var/lib/powerdns/pdns.sqlite3",
             ]
       containers:
         - name: auth
