@@ -159,6 +159,18 @@ replicaset.apps/admin-7cc8f57878   1         1         0       13h
 replicaset.apps/auth-657dc5f59d    0         0         0       13h
 replicaset.apps/auth-866c7f9f8     1         1         0       3m22s
 #+end_example
+
+* ingress
+** create/check tls secret
+
+- generate ii.nz-tls
+
+#+begin_src tmate :window ingress
+kubectl create ns ingress-nginx
+kubectl apply -n ingress-nginx -f ii.nz-tls
+kubectl get secrets -n ingress-nginx
+#+end_src
+
 * Debugging
 ** Reconcile
 *** git push to repo
