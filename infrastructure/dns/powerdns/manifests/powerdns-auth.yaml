@@ -90,6 +90,9 @@ spec:
               "-c",
               "set -e ; set -x ; if [ ! -e /var/lib/powerdns/pdns.sqlite3 ] ; then echo Creating /var/lib/powerdns/pdns.sqlite3 ; sqlite3 /var/lib/powerdns/pdns.sqlite3 < /usr/local/share/doc/pdns/schema.sqlite3.sql ; else echo Existing /var/lib/powerdns/pdns.sqlite3 ; fi ; ls -lah /var/lib/powerdns/pdns.sqlite3",
             ]
+          volumeMounts:
+            - mountPath: /var/lib/powerdns
+              name: powerdns-auth
       containers:
         - name: auth
           image: powerdns/pdns-auth-47:4.7.3
@@ -101,10 +104,10 @@ spec:
           env:
             - name: PDNS_AUTH_API_KEY
               value: hackbach
-          resources: {}
           volumeMounts:
             - mountPath: /var/lib/powerdns
               name: powerdns-auth
+          resources: {}
       volumes:
         - name: powerdns-auth
           persistentVolumeClaim:
