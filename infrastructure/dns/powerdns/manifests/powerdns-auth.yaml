@@ -136,6 +136,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: powerdns-auth
+  namespace: powerdns
 spec:
   accessModes:
     - ReadWriteOnce
