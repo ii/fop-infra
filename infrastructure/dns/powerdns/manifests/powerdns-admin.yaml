@@ -61,13 +61,22 @@ spec:
       containers:
         - env:
             - name: SECRET_KEY
-              value: "hackbach"
+              valueFrom:
+                secretKeyRef:
+                  name: powerdns
+                  key: api_key
             - name: SQLALCHEMY_DATABASE_URI
               value: sqlite:////data/powerdns-admin.db
             - name: PDNS_ADMIN_USER
-              value: hh
+              valueFrom:
+                secretKeyRef:
+                  name: powerdns
+                  key: admin_user
             - name: PDNS_ADMIN_PASSWORD
-              value: ii
+              valueFrom:
+                secretKeyRef:
+                  name: powerdns
+                  key: admin_password
             - name: PDNS_ADMIN_EMAIL
               value: hh@ii.coop
             - name: PDNS_VERSION
