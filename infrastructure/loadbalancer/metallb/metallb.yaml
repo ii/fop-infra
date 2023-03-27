@@ -28,7 +28,7 @@ spec:
   chart:
     spec:
       chart: metallb
-      version: "0.13.7"
+      version: "0.13.9" # Current as of March 27 2023
       sourceRef:
         kind: HelmRepository
         name: metallb

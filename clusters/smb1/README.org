@@ -1,0 +1,13 @@
+#+title: Super Micro Blade Cluster
+* ./
+This folder is our flux config
+* ./terraform/
+This folder brings up the hardware via USB and Talos
+* flux bootstrap
+#+begin_src shell
+flux bootstrap github \
+  --owner=ii \
+  --repository=fop-infra \
+  --branch=canon \
+  --path=clusters/smb1
+#+end_src
