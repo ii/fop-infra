@@ -34,11 +34,11 @@ flux get all
 #+RESULTS:
 #+begin_example
 NAME                     	REVISION     	SUSPENDED	READY	MESSAGE
-gitrepository/flux-system	canon/7cfc03e	False    	True 	stored artifact for revision 'canon/7cfc03e67a8d03273cbe83bdd879b7e5af3e98e0'
+gitrepository/flux-system	canon/e11079b	False    	True 	stored artifact for revision 'canon/e11079bdf9f887ea8b89998774925dd9b661b286'
 
 NAME                     	REVISION     	SUSPENDED	READY	MESSAGE
-kustomization/flux-system	canon/7cfc03e	False    	True 	Applied revision: canon/7cfc03e
-kustomization/infra      	canon/7cfc03e	False    	True 	Applied revision: canon/7cfc03e
+kustomization/flux-system	canon/e11079b	False    	True 	Applied revision: canon/e11079b
+kustomization/infra      	canon/e11079b	False    	True 	Applied revision: canon/e11079b
 
 #+end_example
 
@@ -53,15 +53,14 @@ kubectl get ns
 #+RESULTS:
 #+begin_example
 NAME              STATUS   AGE
-cilium-test       Active   4d16h
-default           Active   5d15h
-flux-system       Active   13h
-kube-node-lease   Active   5d15h
-kube-public       Active   5d15h
-kube-system       Active   5d15h
-metallb-system    Active   16h
-powerdns          Active   12h
-rook-ceph         Active   3d17h
+cilium-test       Active   5d1h
+default           Active   6d
+flux-system       Active   21h
+kube-node-lease   Active   6d
+kube-public       Active   6d
+kube-system       Active   6d
+metallb-system    Active   25h
+rook-ceph         Active   4d1h
 #+end_example
 
 * metallb
@@ -170,7 +169,6 @@ replicaset.apps/admin-7cc8f57878   1         1         0       13h
 replicaset.apps/auth-657dc5f59d    0         0         0       13h
 replicaset.apps/auth-866c7f9f8     1         1         0       3m22s
 #+end_example
-
 * ingress
 ** create/check tls secret
 
@@ -178,7 +176,7 @@ replicaset.apps/auth-866c7f9f8     1         1         0       3m22s
 
 #+begin_src tmate :window ingress
 kubectl create ns ingress-nginx
-kubectl apply -n ingress-nginx -f ii.nz-tls
+kubectl apply -n ingress-nginx -f ii.nz-tls-secret.yaml
 kubectl get secrets -n ingress-nginx
 #+end_src
 ** view imports wildcard ii.nz wildcard tls
@@ -191,9 +189,12 @@ kubectl get secrets -n ingress-nginx ii.nz-tls
 NAME        TYPE                DATA   AGE
 ii.nz-tls   kubernetes.io/tls   2      3h9m
 #+end_example
-
 * Debugging
 ** Reconcile
+*** tldr
+#+begin_src tmate :window tldr
+git push && flux reconcile source git flux-system -n flux-system && flux -n flux-system reconcile kustomization flux-system && kubectl -n flux-system get kustomizations flux-system
+#+end_src
 *** git push to repo
 #+name: source check
 #+begin_src shell
@@ -206,11 +207,11 @@ git log HEAD -1
 #+begin_example
 origin	git@github.com:ii/fop-infra.git (fetch)
 origin	git@github.com:ii/fop-infra.git (push)
-commit f61468073f3537565c77cc39554eccc54011a19c
+commit 311efbd73ddd7cb6495bdaf78d599c94d8bfa063
 Author: Hippie Hacker <hh@ii.coop>
-Date:   Tue Mar 28 09:02:52 2023 +1300
+Date:   Tue Mar 28 15:11:15 2023 +1300
 
-    Sleep for debug in initc for pdns-admin
+    Mounting pdns config map containing postInit script
 #+end_example
 
 *** flux reconcile git source from repo
@@ -224,7 +225,7 @@ flux reconcile source git flux-system -n flux-system
 ► annotating GitRepository flux-system in flux-system namespace
 ✔ GitRepository annotated
 ◎ waiting for GitRepository reconciliation
-✔ fetched revision canon/316105428656b471c04a22f6e97407002af00b2c
+✔ fetched revision canon/067118d20aafafdccff268bb793258a7d4aa87bd
 #+end_example
 
 *** flux reconcile kustomization
@@ -238,7 +239,7 @@ flux -n flux-system reconcile kustomization flux-system
 ► annotating Kustomization flux-system in flux-system namespace
 ✔ Kustomization annotated
 ◎ waiting for Kustomization reconciliation
-✔ applied revision canon/316105428656b471c04a22f6e97407002af00b2c
+✔ applied revision canon/067118d20aafafdccff268bb793258a7d4aa87bd
 #+end_example
 
 *** flux kustomization
