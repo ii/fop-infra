@@ -7,7 +7,7 @@ metadata:
 spec:
   addresses:
     - 123.253.177.110-123.253.177.149
-    - 123.253.176.253/32
+    - 123.253.176.250-123.253.176.253
 ---
 apiVersion: metallb.io/v1beta1
 kind: L2Advertisement
