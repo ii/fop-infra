@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth
+  namespace: powerdns
+  labels:
+    powerdns: auth
+  # annotations:
+  #   metallb.universe.tf/address-pool: default
+  #   metallb.universe.tf/allow-shared-ip: "dns"
+spec:
+  # externalTrafficPolicy: Local
+  # externalTrafficPolicy: Cluster
+  type: LoadBalancer
+  loadBalancerIP: 123.253.176.253
+  selector:
+    powerdns: auth
+  ports:
+    - name: "dns-tcp"
+      protocol: TCP
+      port: 53
+      targetPort: 53
+      # targetPort: dns-tcp
+    - name: "dns-udp"
+      port: 53
+      protocol: UDP
+      targetPort: 53
+    - name: "auth-web"
+      protocol: TCP
+      port: 8081
+      targetPort: 8081

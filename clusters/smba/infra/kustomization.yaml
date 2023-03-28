@@ -1,10 +1,12 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  # Infra that needs CRDs
+  # Infra that has IPS
   - ./metallb-config.yaml
+  - ./powerdns-ingress.yaml
   # - ./ii.nz-dns.yaml
   # - ./coder.ii.nz-ingress.yaml
+  # Infra that needs CRDs
   # Apps
   # - ../../../apps/ii.nz/localhost.ii.nz.yaml
   # - ../../../infrastructure/certs/cert-manager/ii-nz.yaml
