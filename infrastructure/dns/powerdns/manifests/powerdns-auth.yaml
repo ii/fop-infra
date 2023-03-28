@@ -71,7 +71,10 @@ spec:
             - containerPort: 8081
           env:
             - name: PDNS_AUTH_API_KEY
-              value: hackbach
+              valueFrom:
+                secretKeyRef:
+                  name: powerdns
+                  key: api_key
           volumeMounts:
             - mountPath: /var/lib/powerdns
               name: powerdns-auth
