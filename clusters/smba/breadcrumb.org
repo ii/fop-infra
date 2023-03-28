@@ -127,13 +127,24 @@ metadata:
 #+end_SRC
 
 * powerdns
-** secret creation
+** key secret creation
 #+begin_src tmate :window pdns-secrets
 kubectl create secret generic powerdns -n powerdns \
     --from-literal=api_key=$PDNS_API_KEY \
     --from-literal=admin_user=$PDNS_ADMIN_USER \
   --from-literal=admin_password=$PDNS_ADMIN_PASSWORD
 #+end_src
+** configmap for python script
+https://jamesdefabia.github.io/docs/user-guide/kubectl/kubectl_create_configmap/
+#+begin_src shell :dir ../../infrastructure/dns/powerdns/manifests
+echo `pwd`
+kubectl create -n powerdns configmap powerdns-admin --from-file=pdns-poststart.py -o yaml --dry-run > powerdns-admin-configmap.yaml
+#+end_src
+
+#+RESULTS:
+#+begin_example
+/Users/hh/fop-infra/infrastructure/dns/powerdns/manifests
+#+end_example
 
 ** all
 #+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
@@ -170,6 +181,16 @@ kubectl create ns ingress-nginx
 kubectl apply -n ingress-nginx -f ii.nz-tls
 kubectl get secrets -n ingress-nginx
 #+end_src
+** view imports wildcard ii.nz wildcard tls
+#+begin_src shell
+kubectl get secrets -n ingress-nginx ii.nz-tls
+#+end_src
+
+#+RESULTS:
+#+begin_example
+NAME        TYPE                DATA   AGE
+ii.nz-tls   kubernetes.io/tls   2      3h9m
+#+end_example
 
 * Debugging
 ** Reconcile
