@@ -105,13 +105,14 @@ spec:
             - mountPath: /config
               name: powerdns-config
           resources: {}
-          # lifecycle:
-          #   postStart:
-          #     exec:
-          #       command:
-          #         - "/usr/bin/python3"
-          #         - "-c"
-          #         - |-
+          # FIXME: Better approach to dns-poststart
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - "sh"
+                  - "-c"
+                  - "cd /app && cp /config/pdns-poststart.py . && /usr/bin/python3 pdns-poststart.py"
       volumes:
         - name: powerdns-admin
           persistentVolumeClaim:
