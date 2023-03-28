@@ -102,6 +102,8 @@ spec:
           volumeMounts:
             - mountPath: /data
               name: powerdns-admin
+            - mountPath: /config
+              name: powerdns-config
           resources: {}
           # lifecycle:
           #   postStart:
