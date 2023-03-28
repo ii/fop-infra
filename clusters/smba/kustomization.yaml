@@ -13,11 +13,11 @@ kind: Kustomization
 resources:
   - ./infra.yaml
   - ../../infrastructure/loadbalancer/metallb/metallb.yaml
-  - ../../infrastructure/dns/powerdns/manifests/powerdns-ns.yaml
-  - ../../infrastructure/dns/powerdns/manifests/powerdns-admin.yaml
-  - ../../infrastructure/dns/powerdns/manifests/powerdns-auth.yaml
-  - ../../infrastructure/dns/powerdns/manifests/powerdns-admin-configmap.yaml
-  - ../../infrastructure/ingress/nginx/nginx-ingress.yaml
+  # - ../../infrastructure/dns/powerdns/manifests/powerdns-ns.yaml
+  # - ../../infrastructure/dns/powerdns/manifests/powerdns-admin.yaml
+  # - ../../infrastructure/dns/powerdns/manifests/powerdns-auth.yaml
+  # - ../../infrastructure/dns/powerdns/manifests/powerdns-admin-configmap.yaml
+  # - ../../infrastructure/ingress/nginx/nginx-ingress.yaml
   # - ../../infrastructure/dns/powerdns/external-dns.yaml
   # - ../../infrastructure/certs/cert-manager/cert-manager.yaml
   # Tryingto get PowerDNS into a chart?
