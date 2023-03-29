@@ -187,8 +187,105 @@ kubectl get secrets -n ingress-nginx ii.nz-tls
 #+RESULTS:
 #+begin_example
 NAME        TYPE                DATA   AGE
-ii.nz-tls   kubernetes.io/tls   2      3h9m
+ii.nz-tls   kubernetes.io/tls   2      5s
 #+end_example
+* powerdns setup for cert-manager
+Much of this based on https://github.com/sharingio/pair/blob/master/org/explorations/cert-manager-research/cert-manager-research.org#cert-manager-research
+Use cert-manager configured with powerdns tsig keys to update DNS zones when _acme_verification TXT records need to be created.
+- https://cert-manager.io/docs/configuration/acme/dns01/
+- https://cert-manager.io/docs/configuration/acme/dns01/rfc2136/
+- @doktormerlin I have a POC https://github.com/AbsaOSS/cert-manager-webhook-externaldns
+it needs though custom external-dns build with k0da/external-dns@cff0c93
+- https://github.com/k0da/external-dns/commit/cff0c93a0d485b650b7b3b6c5df0f86875e193a5
+- https://github.com/AbsaOSS/cert-manager-webhook-externaldns
+** instructions
+#+begin_src shell
+kubectl -n powerdns exec -it deployment/auth -- pdnsutil 2>&1 | grep tsig
+#+end_src
+
+#+RESULTS:
+#+begin_example
+activate-tsig-key ZONE NAME {primary|secondary|producer|consumer}
+deactivate-tsig-key ZONE NAME {primary|secondary}
+delete-tsig-key NAME               Delete TSIG key (warning! will not unmap key!)
+generate-tsig-key NAME ALGORITHM   Generate new TSIG key
+import-tsig-key NAME ALGORITHM KEY Import TSIG key
+list-tsig-keys                     List all TSIG keys
+#+end_example
+** generate-tsig-key ii
+#+begin_src shell
+kubectl -n powerdns exec -it deployment/auth -- pdnsutil generate-tsig-key ii hmac-md5
+#+end_src
+
+** activate-tsig-key ii
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+kubectl -n powerdns exec deployment/auth -c auth -- pdnsutil activate-tsig-key ii.nz ii master
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Enabled TSIG key ii for ii.nz
+#+end_example
+
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+kubectl -n powerdns exec deployment/auth -c auth -- pdnsutil activate-tsig-key cloudnative.nz ii master
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Enabled TSIG key ii for cloudnative.nz
+#+end_example
+** list-tsig-keys
+#+begin_src shell
+ kubectl -n powerdns exec -it deployment/auth -- pdnsutil list-tsig-keys
+#+end_src
+
+#+begin_src shell :results silent
+ TSIG_KEY=$(kubectl -n powerdns exec deployment/auth -c auth -- pdnsutil list-tsig-keys  | grep ii\. | awk '{print $3}')
+ echo $TSIG_KEY
+#+end_src
+
+** get-meta
+#+begin_src shell
+kubectl -n powerdns exec -it deployment/auth -- pdnsutil get-meta ii.nz
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Metadata for 'ii.nz'
+SOA-EDIT-API = DEFAULT
+TSIG-ALLOW-AXFR = ii
+TSIG-ALLOW-DNSUPDATE = ii
+#+end_example
+
+#+begin_src shell
+kubectl -n powerdns exec -it deployment/auth -- pdnsutil set-meta ii.nz TSIG-ALLOW-DNSUPDATE ii
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Set 'ii.nz' meta TSIG-ALLOW-DNSUPDATE = ii
+#+end_example
+
+#+begin_src shell
+kubectl -n powerdns exec -it deployment/auth -- pdnsutil set-meta cloudnative.nz TSIG-ALLOW-DNSUPDATE ii
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Set 'cloudnative.nz' meta TSIG-ALLOW-DNSUPDATE = ii
+#+end_example
+
+** create secret
+#+begin_src shell
+kubectl -n cert-manager create secret generic tsig-powerdns --from-literal=powerdns="$(kubectl -n powerdns exec -c auth deployment/auth -- pdnsutil list-tsig-keys | grep pair | awk '{print $3}')"
+#+end_src
+
+#+RESULTS:
+#+begin_example
+#+end_example
+
+* deploy cert-manager
 * Debugging
 ** Reconcile
 *** tldr

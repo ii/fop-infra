@@ -2,13 +2,13 @@
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt-ii-nz
+  name: letsencrypt-fop-nz
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
     email: dns@ii.coop
     privateKeySecretRef:
-      name: letsencrypt-ii-nz
+      name: letsencrypt-fop-nz
     solvers:
       - dns01:
           rfc2136:
@@ -21,20 +21,20 @@ spec:
             # nameserver: 103.233.62.77 # 139.178.68.188
         selector:
           dnsNames:
-            - "*.ii.nz"
-            - "ii.nz"
+            - "*.fop.nz"
+            - "fop.nz"
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: letsencrypt-ii-nz
+  name: letsencrypt-fop-nz
   namespace: cert-manager
 spec:
-  secretName: letsencrypt-ii-nz
+  secretName: letsencrypt-fop-nz
   issuerRef:
-    name: letsencrypt-ii-nz
+    name: letsencrypt-fop-nz
     kind: ClusterIssuer
-  commonName: "*.ii.nz"
+  commonName: "*.fop.nz"
   dnsNames:
-    - ii.nz
-    - "*.ii.nz"
+    - fop.nz
+    - "*.fop.nz"

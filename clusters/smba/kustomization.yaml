@@ -18,11 +18,11 @@ resources:
   - ../../infrastructure/dns/powerdns/manifests/powerdns-auth.yaml
   - ../../infrastructure/dns/powerdns/manifests/powerdns-admin-configmap.yaml
   - ../../infrastructure/ingress/nginx/nginx-ingress.yaml
+  - ../../infrastructure/certs/cert-manager/cloudnative-nz.yaml
   # Apps
   - ../../apps/ii.nz/ii.nz.yaml
   - ../../apps/careers.cloudnative.nz/deployment.yaml
   # - ../../apps/minecraft/itzg-minecraft.yaml
-  # - ../../infrastructure/certs/cert-manager/ii-nz.yaml
   # - ../../apps/coder/coder.yaml
   # - ../../apps/ii.nz/localhost.ii.nz.yaml
   # FOR LATER
