@@ -318,7 +318,10 @@ kubectl apply -f ./coder-github-secret.yaml
 #+begin_example
 secret/coder-github configured
 #+end_example
-
+** need a target namespace for workspaces
+#+begin_src shell
+kubectl create ns coder-workspaces
+#+end_src
 * Debugging
 ** Reconcile
 *** tldr

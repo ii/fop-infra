@@ -37,7 +37,7 @@ spec:
         - name: CODER_ACCESS_URL
           value: "https://coder.ii.nz"
         - name: CODER_WILDCARD_ACCESS_URL
-          value: "*.coder.ii.nz"
+          value: "*.ii.nz"
         - name: CODER_SWAGGER_ENABLE
           value: "true"
         - name: CODER_PROMETHEUS_ADDRESS
