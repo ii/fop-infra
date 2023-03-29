@@ -30,6 +30,7 @@ spec:
                   name: http
             path: /
             pathType: Prefix
+    # - host: "*.coder.ii.nz"
     - host: "*.coder.ii.nz"
       http:
         paths:
@@ -43,9 +44,10 @@ spec:
   tls:
     - hosts:
         - "coder.ii.nz"
-    - hosts:
-        - "*.coder.ii.nz"
-      secretName: coder-ii-nz-tls
+        - "*.ii.nz"
+    # - hosts:
+    #     - "*.coder.ii.nz"
+    #   secretName: coder-ii-nz-tls
 status:
   loadBalancer:
     ingress:

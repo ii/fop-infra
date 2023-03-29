@@ -303,7 +303,7 @@ kubectl apply -f ./coder-secret.yaml
 #+RESULTS:
 #+begin_example
 Error from server (AlreadyExists): namespaces "coder" already exists
-W0330 03:07:15.177136   22847 helpers.go:663] --dry-run is deprecated and can be replaced with --dry-run=client.
+W0330 03:10:55.159141   23786 helpers.go:663] --dry-run is deprecated and can be replaced with --dry-run=client.
 secret/coder configured
 #+end_example
 
