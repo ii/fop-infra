@@ -74,6 +74,11 @@ spec:
             secretKeyRef:
               name: coder-github
               key: oauth2-secret
+        - name: METAL_AUTH_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: coder
+              key: metal-auth-token
         # https://coder.com/docs/v2/latest/admin/git-providers#multiple-git-providers-enterprise
         # - name: CODER_OIDC_SIGN_IN_TEXT
         #   value: "Sign in with Gitea"
