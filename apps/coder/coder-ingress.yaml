@@ -31,7 +31,7 @@ spec:
             path: /
             pathType: Prefix
     # - host: "*.coder.ii.nz"
-    - host: "*.coder.ii.nz"
+    - host: "*.ii.nz"
       http:
         paths:
           - backend:
