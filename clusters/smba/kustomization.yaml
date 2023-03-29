@@ -22,8 +22,10 @@ resources:
   # Apps
   - ../../apps/ii.nz/ii.nz.yaml
   - ../../apps/careers.cloudnative.nz/deployment.yaml
+  - ../../apps/coder/coder.yaml
+  - ../../apps/coder/coder-ingress.yaml
+  - ../../apps/coder/coder-helmrelease.yaml
   # - ../../apps/minecraft/itzg-minecraft.yaml
-  # - ../../apps/coder/coder.yaml
   # - ../../apps/ii.nz/localhost.ii.nz.yaml
   # FOR LATER
   # - ../../infrastructure/dns/powerdns/external-dns.yaml

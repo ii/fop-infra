@@ -287,6 +287,23 @@ secret/tsig-powerdns created
 #+end_example
 
 * deploy cert-manager
+* deploy coder.ii.nz
+We need a good db secret:
+#+begin_src shell
+kubectl create ns coder
+kubectl create secret generic coder-db-url -n coder \
+    --from-literal=url="postgres://coder:$coder_db_password@coder-db-postgresql.coder.svc.hackbach.cluster:5432/coder?sslmode=disable" \
+    --from-literal=password=$coder_db_password \
+    --from-literal=postgres-password=$coder_db_password \
+    -o yaml --dry-run > ./coder-secret.yaml
+kubectl apply -f ./coder-secret.yaml
+#+end_src
+
+#+RESULTS:
+#+begin_example
+#+end_example
+
+
 * Debugging
 ** Reconcile
 *** tldr
