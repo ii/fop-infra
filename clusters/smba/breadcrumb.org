@@ -283,6 +283,7 @@ kubectl -n cert-manager create secret generic tsig-powerdns --from-literal=power
 
 #+RESULTS:
 #+begin_example
+secret/tsig-powerdns created
 #+end_example
 
 * deploy cert-manager
