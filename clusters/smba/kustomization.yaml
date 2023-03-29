@@ -18,7 +18,7 @@ resources:
   - ../../infrastructure/dns/powerdns/manifests/powerdns-auth.yaml
   - ../../infrastructure/dns/powerdns/manifests/powerdns-admin-configmap.yaml
   - ../../infrastructure/ingress/nginx/nginx-ingress.yaml
-  - ../../infrastructure/certs/cert-manager/cloudnative-nz.yaml
+  - ../../infrastructure/certs/cert-manager/cert-manager.yaml
   # Apps
   - ../../apps/ii.nz/ii.nz.yaml
   - ../../apps/careers.cloudnative.nz/deployment.yaml
@@ -27,7 +27,6 @@ resources:
   # - ../../apps/ii.nz/localhost.ii.nz.yaml
   # FOR LATER
   # - ../../infrastructure/dns/powerdns/external-dns.yaml
-  # - ../../infrastructure/certs/cert-manager/cert-manager.yaml
   # Tryingto get PowerDNS into a chart?
   # - ../../infrastructure/dns/powerdns/ii-powerdns.yaml
   # We don't use dist YET
