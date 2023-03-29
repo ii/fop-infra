@@ -289,10 +289,10 @@ secret/tsig-powerdns created
 * deploy cert-manager
 * deploy coder.ii.nz
 We need a good db secret:
-#+begin_src shell
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
 kubectl create ns coder
-kubectl create secret generic coder-db-url -n coder \
-    --from-literal=url="postgres://coder:$coder_db_password@coder-db-postgresql.coder.svc.hackbach.cluster:5432/coder?sslmode=disable" \
+kubectl create secret generic coder -n coder \
+    --from-literal=dburl="postgres://coder:$coder_db_password@coder-db-postgresql.coder.svc.hackbach.cluster:5432/coder?sslmode=disable" \
     --from-literal=password=$coder_db_password \
     --from-literal=postgres-password=$coder_db_password \
     -o yaml --dry-run > ./coder-secret.yaml
@@ -301,8 +301,23 @@ kubectl apply -f ./coder-secret.yaml
 
 #+RESULTS:
 #+begin_example
+Error from server (AlreadyExists): namespaces "coder" already exists
+W0329 22:43:37.430700   69346 helpers.go:663] --dry-run is deprecated and can be replaced with --dry-run=client.
+secret/coder configured
 #+end_example
 
+#+begin_src shell
+kubectl create secret generic coder-github -n coder \
+    --from-literal=oauth2-id=$CODER_OAUTH2_GITHUB_CLIENT_ID \
+    --from-literal=oauth2-secret=$CODER_OAUTH2_GITHUB_CLIENT_ID \
+    -o yaml --dry-run > ./coder-github-secret.yaml
+kubectl apply -f ./coder-github-secret.yaml
+#+end_src
+
+#+RESULTS:
+#+begin_example
+secret/coder-github created
+#+end_example
 
 * Debugging
 ** Reconcile
