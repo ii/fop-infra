@@ -4,6 +4,7 @@ resources:
   # Infra that has IPS
   - ./metallb-config.yaml
   - ./powerdns-ingress.yaml
+  - ./careers.cloudnative.nz.yaml
   # - ./ii.nz-dns.yaml
   # - ./coder.ii.nz-ingress.yaml
   # Infra that needs CRDs

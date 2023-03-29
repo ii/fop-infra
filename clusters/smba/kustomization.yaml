@@ -20,6 +20,7 @@ resources:
   - ../../infrastructure/ingress/nginx/nginx-ingress.yaml
   # Apps
   - ../../apps/ii.nz/ii.nz.yaml
+  - ../../apps/careers.cloudnative.nz/deployment.yaml
   # - ../../apps/minecraft/itzg-minecraft.yaml
   # - ../../infrastructure/certs/cert-manager/ii-nz.yaml
   # - ../../apps/coder/coder.yaml

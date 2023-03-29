@@ -1,0 +1,58 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: careers-cloudnative-nz
+# FIXME: Warning: would violate PodSecurity "restricted:latest": allowPrivilegeEscalation != false (container "careers-cloudnative-nz" must set securityContext.allowPrivilegeEscalation=false), unrestricted capabilities (container "careers-cloudnative-nz" must set securityContext.capabilities.drop=["ALL"]), runAsNonRoot != true (pod or container "careers-cloudnative-nz" must set securityContext.runAsNonRoot=true), seccompProfile (pod or container "careers-cloudnative-nz" must set securityContext.seccompProfile.type to "RuntimeDefault" or "Localhost")
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: careers-cloudnative-nz
+  namespace: careers-cloudnative-nz
+  labels:
+    environment: production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: careers-cloudnative-nz
+  template:
+    metadata:
+      labels:
+        app: careers-cloudnative-nz
+        environment: production
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: careers-cloudnative-nz
+          image: registry.gitlab.com/ii/expo-prezzo:2021.07.27.1632
+          imagePullPolicy: IfNotPresent
+          # securityContext:
+          #   readOnlyRootFilesystem: true
+          #   runAsUser: 1000
+          #   runAsGroup: 1000
+          #   allowPrivilegeEscalation: false
+          ports:
+            - containerPort: 8101
+          env:
+            - name: TZ
+              value: "Pacific/Auckland"
+          readinessProbe:
+            tcpSocket:
+              port: 8101
+            initialDelaySeconds: 2
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 8101
+            initialDelaySeconds: 2
+            periodSeconds: 10
+            failureThreshold: 10
+          resources:
+            requests:
+              memory: "400Mi"
+              cpu: "1"
+            limits:
+              memory: "400Mi"
+              cpu: "1"
