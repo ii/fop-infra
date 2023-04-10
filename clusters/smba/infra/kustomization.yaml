@@ -5,6 +5,7 @@ resources:
   - ./metallb-config.yaml
   - ./powerdns-ingress.yaml
   - ./careers.cloudnative.nz.yaml
+  - ./multiplex.ii.nz.yaml
   # Certs
   - ./certs/cloudnative-nz.yaml
   # - ./ii.nz-dns.yaml
