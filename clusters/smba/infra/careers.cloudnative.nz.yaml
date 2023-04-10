@@ -23,8 +23,8 @@ metadata:
 spec:
   ingressClassName: nginx
   tls:
-    - hosts:
-        - secretName: "ingress-nginx/cloudnative.nz-tls"
+    - secretName: "ingress-nginx/cloudnative.nz-tls"
+      hosts:
         - "careers.cloudnative.nz"
   rules:
     - host: "careers.cloudnative.nz"
