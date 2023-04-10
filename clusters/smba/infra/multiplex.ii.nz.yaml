@@ -20,7 +20,7 @@ metadata:
   labels:
     app: reveal-multiplex
   name: multiplex-ii-nz
-  namespace: default
+  namespace: ii-nz
 spec:
   ingressClassName: nginx
   rules:

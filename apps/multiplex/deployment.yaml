@@ -1,10 +1,11 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
     app: reveal-multiplex
   name: reveal-multiplex
-  namespace: default
+  namespace: ii-nz
 spec:
   replicas: 1
   selector:
@@ -49,7 +50,7 @@ metadata:
   labels:
     app: reveal-multiplex
   name: reveal-multiplex
-  namespace: default
+  namespace: ii-nz
 spec:
   ports:
     - name: http
