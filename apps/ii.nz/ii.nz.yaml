@@ -87,8 +87,15 @@ spec:
       #               values:
       #                 - ii-nz
       #         topologyKey: "kubernetes.io/hostname"
+      volumes:
+        - name: ii-nz
+          persistentVolumeClaim:
+            claimName: ii-nz
       containers:
         - name: ii-nz
+          volumeMounts:
+            - mountPath: /ii.nz
+              name: ii-nz
           image: registry.gitlab.com/sharingio/environment/environment:2022.09.30.0910-amd64
           # image: registry.gitlab.com/ii/nz:2022.12.19.2230
           #  registry.gitlab.com/ii/nz:2021.07.13.0000
@@ -120,3 +127,15 @@ spec:
           #   limits:
           #     memory: "20Mi"
           #     cpu: "100m"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ii-nz
+  namespace: ii-nz
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
