@@ -347,7 +347,7 @@ privkey.pem
 
 #+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n\:\n" :results none
 kubectl create secret tls cloudnative.nz-tls \
-    --namespace ingress-nginx \
+    --namespace careers-cloudnative-nz \
     --key certbot/live/cloudnative.nz/privkey.pem \
     --cert certbot/live/cloudnative.nz/fullchain.pem \
     --dry-run=client -o yaml > cloudnative.nz-tls-secret.yaml
