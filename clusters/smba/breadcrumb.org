@@ -323,11 +323,50 @@ secret/coder-github configured
 #+begin_src shell
 kubectl create ns coder-workspaces
 #+end_src
+* Add certificate for *.cloudnative.nz, cloudnative.nz
+#+begin_src tmate :window foo
+certbot certonly --server https://acme-v02.api.letsencrypt.org/directory  --manual --preferred-challenges dns -d '*.cloudnative.nz' -d cloudnative.nz --work-dir=$PWD/certbot --logs-dir=$PWD/certbot --config-dir=$PWD/certbot
+#+end_src
+Use https://powerdns.ii.nz/domain/cloudnative.nz to create your TXT record.
+
+Then verify your TXT record is available to the internet peoples: https://toolbox.googleapps.com/apps/dig/#TXT/_acme-challenge.cloudnative.nz
+
+You should have some files under certbot/live/cloudnative.nz
+#+begin_src shell
+ls certbot/live/cloudnative.nz
+#+end_src
+
+#+RESULTS:
+#+begin_example
+README
+cert.pem
+chain.pem
+fullchain.pem
+privkey.pem
+#+end_example
+
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n\:\n" :results none
+kubectl create secret tls cloudnative.nz-tls \
+    --namespace ingress-nginx \
+    --key certbot/live/cloudnative.nz/privkey.pem \
+    --cert certbot/live/cloudnative.nz/fullchain.pem \
+    --dry-run=client -o yaml > cloudnative.nz-tls-secret.yaml
+#+end_src
+
+#+begin_src shell
+kubectl apply -f cloudnative.nz-tls-secret.yaml
+#+end_src
+
+#+RESULTS:
+#+begin_example
+secret/cloudnative.nz-tls created
+#+end_example
+
 * Debugging
 ** Reconcile
 *** tldr
 #+begin_src tmate :window tldr
-git push && flux reconcile source git flux-system -n flux-system && flux -n flux-system reconcile kustomization flux-system && kubectl -n flux-system get kustomizations flux-system
+git push && flux reconcile source git flux-system -n flux-system && flux -n flux-system reconcile kustomization flux-system && kubectl -n flux-system get kustomizations flux-system && flux -n flux-system reconcile kustomization infra && kubectl -n flux-system get kustomizations infra
 #+end_src
 *** git push to repo
 #+name: source check
