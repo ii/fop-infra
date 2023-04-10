@@ -13,9 +13,9 @@ metadata:
   namespace: coder
   labels:
     environment: production
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    #   cert-manager.io/cluster-issuer: ii-nz-letsencrypt-prod
+  # annotations:
+  #   kubernetes.io/ingress.class: nginx
+  #   cert-manager.io/cluster-issuer: ii-nz-letsencrypt-prod
 spec:
   ingressClassName: nginx
   tls:
