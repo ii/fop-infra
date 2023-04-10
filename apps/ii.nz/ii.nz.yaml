@@ -89,33 +89,34 @@ spec:
       #         topologyKey: "kubernetes.io/hostname"
       containers:
         - name: ii-nz
-          image: registry.gitlab.com/ii/nz:2022.12.19.2230
+          image: registry.gitlab.com/sharingio/environment/environment:2022.09.30.0910-amd64
+          # image: registry.gitlab.com/ii/nz:2022.12.19.2230
           #  registry.gitlab.com/ii/nz:2021.07.13.0000
           imagePullPolicy: IfNotPresent
-          securityContext:
-            readOnlyRootFilesystem: true
-            runAsUser: 1000
-            runAsGroup: 1000
-            allowPrivilegeEscalation: false
+          # securityContext:
+          #   readOnlyRootFilesystem: true
+          #   runAsUser: 1000
+          #   runAsGroup: 1000
+          #   allowPrivilegeEscalation: false
           ports:
             - containerPort: 8080
           env:
             - name: TZ
               value: "Pacific/Auckland"
-          readinessProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 2
-            periodSeconds: 10
-          livenessProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 2
-            periodSeconds: 10
-          resources:
-            requests:
-              memory: "20Mi"
-              cpu: "100m"
-            limits:
-              memory: "20Mi"
-              cpu: "100m"
+          # readinessProbe:
+          #   tcpSocket:
+          #     port: 8080
+          #   initialDelaySeconds: 2
+          #   periodSeconds: 10
+          # livenessProbe:
+          #   tcpSocket:
+          #     port: 8080
+          #   initialDelaySeconds: 2
+          #   periodSeconds: 10
+          # resources:
+          #   requests:
+          #     memory: "20Mi"
+          #     cpu: "100m"
+          #   limits:
+          #     memory: "20Mi"
+          #     cpu: "100m"
