@@ -11,7 +11,7 @@ spec:
     - port: 8101
       targetPort: 8101
   selector:
-    name: coder-hh-ii-nz
+    name: hh-careers
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
