@@ -30,3 +30,33 @@ spec:
       protocol: TCP
       port: 8081
       targetPort: 8081
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+  labels:
+    app: powerdns
+  name: pdns-ii-nz
+  namespace: powerdns
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: pdns.ii.nz
+      http:
+        paths:
+          - backend:
+              service:
+                name: auth
+                port:
+                  number: 8081
+            path: /
+            pathType: ImplementationSpecific
+  tls:
+    - hosts:
+        - pdns.ii.nz
+status:
+  loadBalancer:
+    ingress:
+      # Let's use the same IP as everyone else
+      - ip: 123.253.177.110
