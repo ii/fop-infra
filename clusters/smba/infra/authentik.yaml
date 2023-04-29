@@ -41,6 +41,7 @@ spec:
         password: "/erJXa5usdMmtWoR3/rbmhjWNjg1/neSpjn2E8ipme0/znHP"
 
     ingress:
+      ingressClassName: "nginx"
       enabled: true
       hosts:
         - host: authentik.ii.nz
