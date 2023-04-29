@@ -43,6 +43,9 @@ spec:
     ingress:
       ingressClassName: "nginx"
       enabled: true
+      tls:
+        - hosts:
+            - authentik.ii.nz
       hosts:
         - host: authentik.ii.nz
           paths:
