@@ -45,9 +45,9 @@ spec:
       enabled: true
       tls:
         - hosts:
-            - authentik.ii.nz
+            - sso.ii.nz
       hosts:
-        - host: authentik.ii.nz
+        - host: sso.ii.nz
           paths:
             - path: "/"
               pathType: Prefix
