@@ -10,7 +10,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ii-nz
-  namespace: coder
+  namespace: ii-nz
   labels:
     environment: production
   # annotations:
@@ -37,105 +37,12 @@ apiVersion: v1
 kind: Service
 metadata:
   name: ii-nz
-  namespace: coder
+  namespace: ii-nz
   labels:
     environment: production
 spec:
   ports:
     - port: 80
-      targetPort: 80
+      targetPort: 8080
   selector:
-    name: coder-hh-ii-nz
-# ---
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   name: ii-nz
-#   namespace: ii-nz
-#   labels:
-#     environment: production
-# spec:
-#   replicas: 1
-#   selector:
-#     matchLabels:
-#       app: ii-nz
-#   template:
-#     metadata:
-#       labels:
-#         app: ii-nz
-#         environment: production
-#     spec:
-#       automountServiceAccountToken: false
-#       # affinity:
-#       #   nodeAffinity:
-#       #     preferredDuringSchedulingIgnoredDuringExecution:
-#       #       - weight: 1
-#       #         preference:
-#       #           matchExpressions:
-#       #             - key: kubernetes.io/arch
-#       #               operator: In
-#       #               values:
-#       #                 - amd64
-#       #   podAntiAffinity:
-#       #     preferredDuringSchedulingIgnoredDuringExecution:
-#       #     - weight: 1
-#       #       podAffinityTerm:
-#       #         labelSelector:
-#       #           matchExpressions:
-#       #             - key: app
-#       #               operator: In
-#       #               values:
-#       #                 - ii-nz
-#       #         topologyKey: "kubernetes.io/hostname"
-#       volumes:
-#         - name: ii-nz
-#           persistentVolumeClaim:
-#             claimName: ii-nz
-#       containers:
-#         - name: ii-nz
-#           volumeMounts:
-#             - mountPath: /ii.nz
-#               name: ii-nz
-#           image: registry.gitlab.com/sharingio/environment/environment:2022.09.30.0910-amd64
-#           # image: registry.gitlab.com/ii/nz:2022.12.19.2230
-#           #  registry.gitlab.com/ii/nz:2021.07.13.0000
-#           imagePullPolicy: IfNotPresent
-#           # securityContext:
-#           #   readOnlyRootFilesystem: true
-#           #   runAsUser: 1000
-#           #   runAsGroup: 1000
-#           #   allowPrivilegeEscalation: false
-#           ports:
-#             - containerPort: 80
-#           env:
-#             - name: TZ
-#               value: "Pacific/Auckland"
-#           # readinessProbe:
-#           #   tcpSocket:
-#           #     port: 8080
-#           #   initialDelaySeconds: 2
-#           #   periodSeconds: 10
-#           # livenessProbe:
-#           #   tcpSocket:
-#           #     port: 8080
-#           #   initialDelaySeconds: 2
-#           #   periodSeconds: 10
-#           # resources:
-#           #   requests:
-#           #     memory: "20Mi"
-#           #     cpu: "100m"
-#           #   limits:
-#           #     memory: "20Mi"
-#           #     cpu: "100m"
-# ---
-# apiVersion: v1
-# kind: PersistentVolumeClaim
-# metadata:
-#   name: ii-nz
-#   namespace: ii-nz
-# spec:
-#   accessModes:
-#     - ReadWriteOnce
-#   resources:
-#     requests:
-#       storage: 5Gi
+    app: ii-nz-website
