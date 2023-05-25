@@ -61,7 +61,7 @@ spec:
               name: coder-github
               key: oauth2-secret
         - name: CODER_GITAUTH_0_ID
-          value: "primary-github"
+          value: "github"
         - name: CODER_GITAUTH_0_TYPE
           value: "github"
         - name: CODER_GITAUTH_0_SCOPES
