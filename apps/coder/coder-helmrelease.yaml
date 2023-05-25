@@ -70,12 +70,12 @@ spec:
           valueFrom:
             secretKeyRef:
               name: coder-github
-              key: oauth2-id
+              key: gitauth-id
         - name: CODER_GITAUTH_0_CLIENT_SECRET
           valueFrom:
             secretKeyRef:
               name: coder-github
-              key: oauth2-secret
+              key: gitauth-secret
         - name: METAL_AUTH_TOKEN
           valueFrom:
             secretKeyRef:

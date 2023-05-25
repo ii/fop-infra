@@ -311,6 +311,8 @@ secret/coder configured
 kubectl create secret generic coder-github -n coder \
     --from-literal=oauth2-id=$CODER_OAUTH2_GITHUB_CLIENT_ID \
     --from-literal=oauth2-secret=$CODER_OAUTH2_GITHUB_CLIENT_SECRET \
+    --from-literal=gitauth-id=$CODER_OAUTH2_GITHUB_CLIENT_ID \
+    --from-literal=gitauth-secret=$CODER_OAUTH2_GITHUB_CLIENT_SECRET \
     -o yaml --dry-run > ./coder-github-secret.yaml
 kubectl apply -f ./coder-github-secret.yaml
 #+end_src
