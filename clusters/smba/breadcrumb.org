@@ -364,6 +364,13 @@ kubectl apply -f cloudnative.nz-tls-secret.yaml
 secret/cloudnative.nz-tls created
 #+end_example
 
+* Setup ceph.ii.nz
+Much of this was carefully creating [[https://github.com/ii/fop-infra/blob/canon/infrastructure/storage/rook/rook-ceph.yaml]]
+Including the tls ceph ingress for the dashboard.
+The passwords can be retrieved via the following command:
+#+begin_src shell :results silent
+kubectl -n rook-ceph get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode
+#+end_src
 * Debugging
 ** Reconcile
 *** tldr
@@ -702,6 +709,30 @@ Mar 27 19:46:02 Creating backend connection for TCP
 Mar 27 19:46:02 About to create 3 backend threads for UDP
 Mar 27 19:46:02 Done launching threads, ready to distribute questions
 #+end_example
+
+** OGS is not configured in ceph.ii.nz
+#+begin_example
+The Object Gateway Service is not configured
+Error connecting to Object Gateway
+Please consult the documentation on how to configure and enable the management functionality.
+#+end_example
+*** Docs
+https://docs.ceph.com/en/latest/mgr/dashboard/#enabling-the-object-gateway-management-frontend
+**** ENABLING THE OBJECT GATEWAY MANAGEMENT FRONTEND
+When RGW is deployed with cephadm, the RGW credentials used by the dashboard will be automatically configured. You can also manually force the credentials to be set up with:
+
+#+begin_src shell
+ceph dashboard set-rgw-credentials
+#+end_src
+
+This will create an RGW user with uid dashboard for each realm in the system.
+
+If you’ve configured a custom ‘admin’ resource in your RGW admin API, you should set it here also:
+
+#+begin_src shell
+ceph dashboard set-rgw-api-admin-resource <admin_resource>
+#+end_src
+
 
 * Footnotes
 ** api-resources
