@@ -55,16 +55,19 @@ spec:
       interval: 12h
   values:
     operatorNamespace: rook-ceph
-    # dashboard:
-    #   ssl: false
-    # ingress:
-    #   ingressClassName: nginx
-      # dashboard:
-      #   host:
-      #     name: "ceph.ii.nz"
-        # tls:
-        #   hosts:
-        #     - "ceph.ii.nz"
+    toolbox:
+      enabled: true
+    cephClusterSpec:
+      dashboard:
+        ssl: false
+    ingress:
+      dashboard:
+        ingressClassName: nginx
+        host:
+          name: "ceph.ii.nz"
+        tls:
+          - hosts:
+            - "ceph.ii.nz"
 
     # cephObjectStores:
     #   - name: ceph-objectstore
