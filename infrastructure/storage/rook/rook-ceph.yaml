@@ -60,7 +60,8 @@ spec:
     ingress:
       ingressClassName: nginx
       dashboard:
-        host: "ceph.ii.nz"
+        host:
+          name: "ceph.ii.nz"
         tls:
           hosts:
             - "ceph.ii.nz"
