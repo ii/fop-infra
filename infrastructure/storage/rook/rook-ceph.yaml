@@ -62,9 +62,10 @@ spec:
       dashboard:
         host:
           name: "ceph.ii.nz"
-        tls:
-          hosts:
-            - "ceph.ii.nz"
+        # tls:
+        #   hosts:
+        #     - "ceph.ii.nz"
+
     # cephObjectStores:
     #   - name: ceph-objectstore
     #     # see https://github.com/rook/rook/blob/master/Documentation/CRDs/Object-Storage/ceph-object-store-crd.md#object-store-settings for available configuration
@@ -105,11 +106,11 @@ spec:
     #       # Enable an ingress for the ceph-objectstore
     #       enabled: false
     #       # annotations: {}
-    #       # host:
-    #       #   name: objectstore.example.com
-    #       #   path: /
-    #       # tls:
-    #       # - hosts:
-    #       #     - objectstore.example.com
+    #       host:
+    #         name: s3.ii.nz
+    #         path: /
+    #       tls:
+    #       - hosts:
+    #           - s3.ii.nz
     #       #   secretName: ceph-objectstore-tls
-    #       # ingressClassName: nginx
+    #       ingressClassName: nginx
