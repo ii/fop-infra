@@ -19,6 +19,7 @@ resources:
   - ../../infrastructure/dns/powerdns/manifests/powerdns-admin-configmap.yaml
   - ../../infrastructure/ingress/nginx/nginx-ingress.yaml
   - ../../infrastructure/certs/cert-manager/cert-manager.yaml
+  - ../../infrastructure/storage/rook/rook-ceph.yaml
   # Apps
   - ../../apps/ii.nz/ii.nz.yaml
   - ../../apps/ii.nz/matey.ii.nz.yaml
