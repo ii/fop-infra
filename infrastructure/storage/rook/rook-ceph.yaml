@@ -46,5 +46,5 @@ spec:
         name: rook
         namespace: rook-ceph
       interval: 12h
-values:
-  operatorNamespace: rook-ceph
+  values:
+    operatorNamespace: rook-ceph
