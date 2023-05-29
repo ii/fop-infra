@@ -57,11 +57,11 @@ spec:
     operatorNamespace: rook-ceph
     dashboard:
       ssl: false
-    ingress:
-      ingressClassName: nginx
-      dashboard:
-        host:
-          name: "ceph.ii.nz"
+    # ingress:
+    #   ingressClassName: nginx
+      # dashboard:
+      #   host:
+      #     name: "ceph.ii.nz"
         # tls:
         #   hosts:
         #     - "ceph.ii.nz"
