@@ -47,4 +47,6 @@ spec:
         namespace: rook-ceph
       interval: 12h
   values:
+    dashboard:
+      ssl: false
     operatorNamespace: rook-ceph
