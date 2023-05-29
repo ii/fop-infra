@@ -716,6 +716,7 @@ The Object Gateway Service is not configured
 Error connecting to Object Gateway
 Please consult the documentation on how to configure and enable the management functionality.
 #+end_example
+
 *** Docs
 https://docs.ceph.com/en/latest/mgr/dashboard/#enabling-the-object-gateway-management-frontend
 **** ENABLING THE OBJECT GATEWAY MANAGEMENT FRONTEND
@@ -725,6 +726,10 @@ When RGW is deployed with cephadm, the RGW credentials used by the dashboard wil
 ceph dashboard set-rgw-credentials
 #+end_src
 
+#+RESULTS:
+#+begin_example
+#+end_example
+
 This will create an RGW user with uid dashboard for each realm in the system.
 
 If you’ve configured a custom ‘admin’ resource in your RGW admin API, you should set it here also:
@@ -733,7 +738,73 @@ If you’ve configured a custom ‘admin’ resource in your RGW admin API, you 
 ceph dashboard set-rgw-api-admin-resource <admin_resource>
 #+end_src
 
+*** Post Docs
 
+We configured the s3.ii.nz ingress prior, but it didn't work. Hopefully now that it's configured the ceph dashboard set-rgw-credentials will work.
+#+begin_src shell
+kubectl -n rook-ceph exec deployment/rook-ceph-tools  -ti -- bash -c 'ceph dashboard set-rgw-credentials'
+#+end_src
+
+#+RESULTS:
+#+begin_example
+#+end_example
+*** TODO access the dashboand
+*** TODO fix nfs module error
+Try just disabling nfs for now.
+#+begin_src shell :prologue "kubectl -n rook-ceph exec -i deployment/rook-ceph-tools -- bash -c '" :epilogue "' 2>&1"
+ceph mgr module disable nfs
+#+end_src
+#+begin_src shell :prologue "kubectl -n rook-ceph exec -i deployment/rook-ceph-tools -- bash -c '" :epilogue "' 2>&1"
+ceph mgr module ls
+#+end_src
+
+#+RESULTS:
+#+begin_example
+MODULE
+balancer              on (always on)
+crash                 on (always on)
+devicehealth          on (always on)
+orchestrator          on (always on)
+pg_autoscaler         on (always on)
+progress              on (always on)
+rbd_support           on (always on)
+status                on (always on)
+telemetry             on (always on)
+volumes               on (always on)
+dashboard             on
+iostat                on
+prometheus            on
+restful               on
+alerts                -
+cephadm               -
+diskprediction_local  -
+influx                -
+insights              -
+k8sevents             -
+localpool             -
+mds_autoscaler        -
+mirroring             -
+nfs                   -
+osd_perf_query        -
+osd_support           -
+rook                  -
+selftest              -
+snap_schedule         -
+stats                 -
+telegraf              -
+test_orchestrator     -
+zabbix                -
+#+end_example
+*** Remove Warning
+#+begin_src shell :prologue "kubectl -n rook-ceph exec -i deployment/rook-ceph-tools -- bash -c '" :epilogue "' 2>&1"
+ceph crash ls
+#+end_src
+#+begin_src shell :prologue "kubectl -n rook-ceph exec -i deployment/rook-ceph-tools -- bash -c '" :epilogue "' 2>&1"
+ceph crash info ID
+#+end_src
+#+begin_src shell :prologue "kubectl -n rook-ceph exec -i deployment/rook-ceph-tools -- bash -c '" :epilogue "' 2>&1"
+ceph crash rm ID
+#+end_src
 * Footnotes
 ** api-resources
 #+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"

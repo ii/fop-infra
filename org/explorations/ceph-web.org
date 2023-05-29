@@ -1,0 +1,450 @@
+ #+title: Cephweb
+* Original issue
+https://github.com/ii/cncf/issues/39
+* TODO fop.nz site https://github.com/ii/fop-infra/issues/3
+* TODO tt.ii.nz site
+* TODO ceph.ii.nz Object Gateway Support
+* Rook Object Store
+https://github.com/rook/rook/blob/master/design/ceph/object/store.md#rook-object-store
+** our cephblockpool
+*** in toolbox with ceph osd lspools
+
+#+begin_src shell :prologue "kubectl -n rook-ceph exec -i deployment/rook-ceph-tools -- bash -c '" :epilogue "' 2>&1"
+ceph osd lspools
+#+end_src
+
+#+RESULTS:
+#+begin_example
+1 .mgr
+2 ceph-blockpool
+3 ceph-objectstore.rgw.control
+4 ceph-objectstore.rgw.meta
+5 ceph-filesystem-metadata
+6 ceph-filesystem-data0
+7 ceph-objectstore.rgw.log
+8 ceph-objectstore.rgw.buckets.index
+9 ceph-objectstore.rgw.buckets.non-ec
+10 ceph-objectstore.rgw.otp
+11 .rgw.root
+12 ceph-objectstore.rgw.buckets.data
+#+end_example
+*** in kubernetes cephblockpools
+#+begin_src shell :wrap "src json"
+kubectl get -n rook-ceph cephblockpools -A
+#+end_src
+
+#+RESULTS:
+#+begin_src json
+NAMESPACE   NAME             PHASE
+rook-ceph   ceph-blockpool   Ready
+#+end_src
+
+#+begin_src shell :wrap "src json"
+kubectl get -n rook-ceph cephblockpools ceph-blockpool -o jsonpath='{.spec}' | jq .
+#+end_src
+
+#+RESULTS:
+#+begin_src json
+{
+  "erasureCoded": {
+    "codingChunks": 0,
+    "dataChunks": 0
+  },
+  "failureDomain": "host",
+  "mirroring": {},
+  "quotas": {},
+  "replicated": {
+    "size": 3
+  },
+  "statusCheck": {
+    "mirror": {}
+  }
+}
+#+end_src
+
+#+begin_src shell :prologue "kubectl -n rook-ceph exec -i deployment/rook-ceph-tools -- bash -c '" :epilogue "' 2>&1"
+ceph config get client.rgw rgw_enable_apis
+#+end_src
+** our cephobjectstore
+#+begin_src shell :wrap "src json"
+kubectl get -n rook-ceph CephObjectStore ceph-objectstore -o jsonpath='{.spec}' | jq .
+#+end_src
+
+#+RESULTS:
+#+begin_src json
+{
+  "dataPool": {
+    "erasureCoded": {
+      "codingChunks": 1,
+      "dataChunks": 2
+    },
+    "failureDomain": "host",
+    "mirroring": {},
+    "quotas": {},
+    "replicated": {
+      "size": 0
+    },
+    "statusCheck": {
+      "mirror": {}
+    }
+  },
+  "gateway": {
+    "instances": 1,
+    "placement": {},
+    "port": 80,
+    "priorityClassName": "system-cluster-critical",
+    "resources": {
+      "limits": {
+        "cpu": "2",
+        "memory": "2Gi"
+      },
+      "requests": {
+        "cpu": "1",
+        "memory": "1Gi"
+      }
+    }
+  },
+  "healthCheck": {},
+  "metadataPool": {
+    "erasureCoded": {
+      "codingChunks": 0,
+      "dataChunks": 0
+    },
+    "failureDomain": "host",
+    "mirroring": {},
+    "quotas": {},
+    "replicated": {
+      "size": 3
+    },
+    "statusCheck": {
+      "mirror": {}
+    }
+  },
+  "preservePoolsOnDelete": true,
+  "zone": {
+    "name": ""
+  }
+}
+#+end_src
+
+* Blog To Explore
+https://www.adaltas.com/en/2022/08/04/s3-object-storage-rook-ceph/
+#+begin_src shell
+kubectl api-resources | egrep 'cephbucket|objectbucket|cephobjectstores'
+#+end_src
+
+#+RESULTS:
+#+begin_example
+cephbucketnotifications                                                ceph.rook.io/v1                          true         CephBucketNotification
+cephbuckettopics                                                       ceph.rook.io/v1                          true         CephBucketTopic
+cephobjectstores                                                       ceph.rook.io/v1                          true         CephObjectStore
+objectbucketclaims                 obc,obcs                            objectbucket.io/v1alpha1                 true         ObjectBucketClaim
+objectbuckets                      ob,obs                              objectbucket.io/v1alpha1                 false        ObjectBucket
+#+end_example
+* s5 CLI to work with bucket content
+https://github.com/peak/s5cmd
+#+begin_src shell
+
+#+end_src
+* Follow up
+https://github.com/ii/cncf/issues/39#issuecomment-1553521376
+#+begin_comment
+This is working, maybe some documentation pushed to the fop-infra repo for now? Org file is fine.
+#+end_comment
+
+* Our ObjectBuckets
+#+begin_src shell
+kubectl -n rook-ceph get ObjectBucket
+#+end_src
+
+#+RESULTS:
+#+begin_example
+NAME                  AGE
+obc-ii-nz-ii-nz       17d
+obc-rook-ceph-ii-nz   18d
+#+end_example
+* Our default objectbucket
+#+begin_src shell
+kubectl -n rook-ceph get ObjectBucket obc-rook-ceph-ii-nz -o yaml
+#+end_src
+
+#+RESULTS:
+#+begin_example
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucket
+metadata:
+  creationTimestamp: "2023-05-11T03:26:05Z"
+  finalizers:
+  - objectbucket.io/finalizer
+  generation: 2
+  labels:
+    bucket-provisioner: rook-ceph.ceph.rook.io-bucket
+  name: obc-rook-ceph-ii-nz
+  resourceVersion: "15948233"
+  uid: 72384b2d-c9a4-494c-a0c6-571f409c1e91
+spec:
+  additionalState:
+    cephUser: obc-rook-ceph-ii-nz-ef3f98c8-04d4-444c-b207-fc31eae21905
+    objectStoreName: ceph-objectstore
+    objectStoreNamespace: rook-ceph
+  claimRef:
+    apiVersion: objectbucket.io/v1alpha1
+    kind: ObjectBucketClaim
+    name: ii-nz
+    namespace: rook-ceph
+    uid: 736e8f79-8e7f-4062-adb5-47c11d471c58
+  endpoint:
+    additionalConfig:
+      maxObjects: "1000"
+      maxSize: 900M
+    bucketHost: rook-ceph-rgw-ceph-objectstore.rook-ceph.svc
+    bucketName: ii-nz-00f341bb-b5ff-43d9-ae2e-91cadc2fa67f
+    bucketPort: 80
+    region: ""
+    subRegion: ""
+  reclaimPolicy: Delete
+  storageClassName: ceph-bucket
+status:
+  phase: Bound
+#+end_example
+
+* Exploring our obcs
+Interesting that there is only one
+#+begin_src shell
+kubectl -n rook-ceph get ObjectBucketClaim
+#+end_src
+
+#+RESULTS:
+#+begin_example
+NAME    AGE
+ii-nz   18d
+#+end_example
+** exploring our ii-nz obc
+#+begin_src shell
+kubectl -n rook-ceph get ObjectBucketClaim ii-nz -o yaml
+#+end_src
+
+#+RESULTS:
+#+begin_example
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  creationTimestamp: "2023-05-11T03:26:05Z"
+  finalizers:
+  - objectbucket.io/finalizer
+  generation: 5
+  labels:
+    bucket-provisioner: rook-ceph.ceph.rook.io-bucket
+  name: ii-nz
+  namespace: rook-ceph
+  resourceVersion: "15948230"
+  uid: 736e8f79-8e7f-4062-adb5-47c11d471c58
+spec:
+  additionalConfig:
+    maxObjects: "1000"
+    maxSize: 900M
+  bucketName: ii-nz-00f341bb-b5ff-43d9-ae2e-91cadc2fa67f
+  generateBucketName: ii-nz
+  objectBucketName: obc-rook-ceph-ii-nz
+  storageClassName: ceph-bucket
+status:
+  phase: Bound
+#+end_example
+* Storing in s3
+#+begin_src shell :eval never
+$ echo "This is the S3 storage test" > /tmp/myFile
+$ s5cmd --endpoint-url http://$AWS_HOST:$PORT cp /tmp/myFile s3://$BUCKET_NAME
+cp /tmp/myFile s3://ii-nz-00f341bb-b5ff-43d9-ae2e-91cadc2fa67f/myFile
+
+$ s5cmd --endpoint-url http://$AWS_HOST:$PORT cp s3://$BUCKET_NAME/myFile /tmp/myDownloadedFile
+cp s3://ii-nz-00f341bb-b5ff-43d9-ae2e-91cadc2fa67f/myFile /tmp/myDownloadedFile
+
+$ cat /tmp/myDownloadedFile
+This is the S3 storage test
+#+end_src
+* Getting bucket for cm
+#+begin_src shell
+kubectl -n rook-ceph get cm ii-nz -o jsonpath='{.data.BUCKET_NAME}' ; echo
+#+end_src
+
+#+RESULTS:
+#+begin_example
+ii-nz-00f341bb-b5ff-43d9-ae2e-91cadc2fa67f
+#+end_example
+
+* toolbox
+The following commands are run wrapped in the following:
+
+#+begin_src shell
+kubectl -n rook-ceph exec -it deployment/rook-ceph-tools -- bash -c 'src shell block lines\nmore commands'
+#+end_src
+* Enable APIs
+#+begin_src shell :prologue "kubectl -n rook-ceph exec -i deployment/rook-ceph-tools -- bash -c '" :epilogue "' 2>&1"
+ceph config get client.rgw rgw_enable_apis
+#+end_src
+
+#+RESULTS:
+#+begin_example
+s3, s3website, swift, swift_auth, admin, sts, iam, notifications
+#+end_example
+
+* rgw_dns_name
+#+begin_src shell :prologue "kubectl -n rook-ceph exec -i deployment/rook-ceph-tools -- bash -c '" :epilogue "' 2>&1"
+ceph config get client.rgw rgw_dns_name
+#+end_src
+
+#+RESULTS:
+#+begin_example
+o.ii.nz
+#+end_example
+* rgw_dns_s3website_name
+#+begin_src shell :prologue "kubectl -n rook-ceph exec -i deployment/rook-ceph-tools -- bash -c '" :epilogue "' 2>&1"
+ceph config get client.rgw rgw_dns_s3website_name
+#+end_src
+
+#+RESULTS:
+#+begin_example
+w.ii.nz
+#+end_example
+
+* rgw_dns_rgw_resolve_cname
+#+begin_src shell :prologue "kubectl -n rook-ceph exec -i deployment/rook-ceph-tools -- bash -c '" :epilogue "' 2>&1"
+#+begin_src shell :prologue "kubectl -n rook-ceph exec -i deployment/rook-ceph-tools -- bash -c '" :epilogue "' 2>&1"
+ceph config get client.rgw rgw_resolve_cname
+#+end_src
+
+#+RESULTS:
+#+begin_example
+true
+#+end_example
+
+* ii.nz Placeholder until we get CNAMEs working
+#+begin_src shell :eval never
+$ echo "<h1>ii.nz</h1>" > /tmp/index.html
+$ s5cmd --endpoint-url http://$AWS_HOST:$PORT cp /tmp/index.html s3://$BUCKET_NAME
+cp /tmp/index.html s3://ii-nz-00f341bb-b5ff-43d9-ae2e-91cadc2fa67f/index.html
+
+$ s5cmd --endpoint-url http://$AWS_HOST:$PORT cp s3://$BUCKET_NAME/index.html /tmp/website
+cp s3://ii-nz-00f341bb-b5ff-43d9-ae2e-91cadc2fa67f/index.html /tmp/website
+
+$ cat /tmp/website
+<h1>ii.nz</h1>
+#+end_src
+* Red Hat Ceph Storage
+https://access.redhat.com/documentation/en-us/red_hat_ceph_storage/5/html/object_gateway_guide/basic-configuration#static-web-hosting
+#+begin_src
+
+#+end_src
+** check
+#+begin_src shell :prologue "kubectl -n rook-ceph exec -i deployment/rook-ceph-tools -- bash -c '" :epilogue "' 2>&1"
+ceph config get client.rgw rgw_enable_apis
+#+end_src
+
+#+RESULTS:
+#+begin_example
+s3, s3website, swift, swift_auth, admin, sts, iam, notifications
+#+end_example
+
+#+begin_src shell :prologue "kubectl -n rook-ceph exec -i deployment/rook-ceph-tools -- bash -c '" :epilogue "' 2>&1"
+ceph config get client.rgw rgw_enable_static_website
+#+end_src
+
+#+RESULTS:
+#+begin_example
+true
+#+end_example
+
+#+begin_src shell :prologue "kubectl -n rook-ceph exec -i deployment/rook-ceph-tools -- bash -c '" :epilogue "' 2>&1"
+ceph config get client.rgw rgw_dns_name
+#+end_src
+
+#+RESULTS:
+#+begin_example
+s3.ii.nz
+#+end_example
+
+#+begin_src shell :prologue "kubectl -n rook-ceph exec -i deployment/rook-ceph-tools -- bash -c '" :epilogue "' 2>&1"
+ceph config get client.rgw rgw_dns_s3website_name
+#+end_src
+
+#+RESULTS:
+#+begin_example
+web.ii.nz
+#+end_example
+** set
+#+begin_src shell :prologue "kubectl -n rook-ceph exec -i deployment/rook-ceph-tools -- bash -c '" :epilogue "' 2>&1"
+ceph config set client.rgw rgw_dns_name s3.ii.nz
+ceph config set client.rgw rgw_dns_s3website_name web.ii.nz
+ceph config set client.rgw rgw_resolve_cname true
+#+end_src
+
+#+RESULTS:
+#+begin_example
+#+end_example
+
+* CNAMEs for Websites
+https://cloud-native.slack.com/archives/C052SB996JE/p1683777256226739
+https://cloud-native.slack.com/archives/C052SB996JE/p1683924598408509
+#+begin_src shell
+kubectl -n ii-nz get cm ii-nz -oyaml
+#+end_src
+
+#+RESULTS:
+#+begin_example
+apiVersion: v1
+data:
+  BUCKET_HOST: rook-ceph-rgw-ceph-objectstore.rook-ceph.svc
+  BUCKET_NAME: ii-nz-c2d0e264-75b6-4f81-8f02-277229c26244
+  BUCKET_PORT: "80"
+  BUCKET_REGION: ""
+  BUCKET_SUBREGION: ""
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2023-05-12T01:04:02Z"
+  finalizers:
+  - objectbucket.io/finalizer
+  labels:
+    bucket-provisioner: rook-ceph.ceph.rook.io-bucket
+  name: ii-nz
+  namespace: ii-nz
+  ownerReferences:
+  - apiVersion: objectbucket.io/v1alpha1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ObjectBucketClaim
+    name: ii-nz
+    uid: fa60e216-ec3a-4bf4-a2ee-7d4e9a216555
+  resourceVersion: "15962194"
+  uid: 20770baf-d409-4699-9411-ceed5225990f
+#+end_example
+
+#+begin_src shell
+kubectl -n ii-nz get secret ii-nz -oyaml
+#+end_src
+
+#+RESULTS:
+#+begin_example
+apiVersion: v1
+data:
+  AWS_ACCESS_KEY_ID: RFE3WDFFTDhOSEE3RzZHOTMzRk4=
+  AWS_SECRET_ACCESS_KEY: YjZpSGhWQXQyMUUybDdGSm9ZUlhERnVmYldPVXhLSExrOUlsSFFqVg==
+kind: Secret
+metadata:
+  creationTimestamp: "2023-05-12T01:04:02Z"
+  finalizers:
+  - objectbucket.io/finalizer
+  labels:
+    bucket-provisioner: rook-ceph.ceph.rook.io-bucket
+  name: ii-nz
+  namespace: ii-nz
+  ownerReferences:
+  - apiVersion: objectbucket.io/v1alpha1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ObjectBucketClaim
+    name: ii-nz
+    uid: fa60e216-ec3a-4bf4-a2ee-7d4e9a216555
+  resourceVersion: "15962193"
+  uid: 09e57a99-5208-43c9-b966-e6d4613107b5
+type: Opaque
+#+end_example
