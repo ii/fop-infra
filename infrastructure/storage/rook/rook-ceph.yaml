@@ -55,8 +55,8 @@ spec:
       interval: 12h
   values:
     operatorNamespace: rook-ceph
-    dashboard:
-      ssl: false
+    # dashboard:
+    #   ssl: false
     # ingress:
     #   ingressClassName: nginx
       # dashboard:
