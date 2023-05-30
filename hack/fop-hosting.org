@@ -1,0 +1,16 @@
+#+TITLE: Fop Hosting
+
+
+* Template creating hosting resources
+
+This is a temporary solution until we get ceph static websites working.
+
+#+begin_src
+HOSTING_APP_LABEL=scratch-website
+HOSTING_NS=scratch-ii-nz
+HOSTING_DOMAIN=scratch.ii.nz
+#+end_src
+
+#+begin_src
+envsubst < ./fop-hosting.yaml | kubectl apply -f -
+#+end_src

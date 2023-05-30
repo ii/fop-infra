@@ -1,0 +1,119 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ${HOSTING_NS}
+  labels:
+    environment: production
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/enforce-version: latest
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/audit-version: latest
+    pod-security.kubernetes.io/warn: privileged
+    pod-security.kubernetes.io/warn-version: latest
+---
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: ${HOSTING_NS}
+  namespace: ${HOSTING_NS}
+spec:
+  # To create a new bucket specify either `bucketName` or
+  # `generateBucketName` here. Both cannot be used. To access
+  # an existing bucket the bucket name needs to be defined in
+  # the StorageClass referenced here, and both `bucketName` and
+  # `generateBucketName` must be omitted in the OBC.
+  #bucketName:
+  generateBucketName: ${HOSTING_NS}
+  storageClassName: ceph-bucket
+  additionalConfig:
+    maxObjects: "2000"
+    maxSize: "1G"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: production
+  name: ${HOSTING_APP_LABEL}
+  namespace: ${HOSTING_NS}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${HOSTING_APP_LABEL}
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: ${HOSTING_APP_LABEL}
+        environment: production
+    spec:
+      containers:
+      - image: heyste/s3www
+        imagePullPolicy: Always
+        name: s3www
+        command: ["/app/bin/s3www"]
+        args: ["-endpoint","http://$(BUCKET_HOST)/","-accessKey","$(AWS_ACCESS_KEY_ID)","-secretKey","$(AWS_SECRET_ACCESS_KEY)","-bucket","$(BUCKET_NAME)","-address","0.0.0.0:8080"]
+        ports:
+          - containerPort: 8080
+        env:
+          - name: BUCKET_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: ${HOSTING_NS}
+                key: BUCKET_HOST
+          - name: BUCKET_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: ${HOSTING_NS}
+                key: BUCKET_NAME
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: ${HOSTING_NS}
+                key: AWS_ACCESS_KEY_ID
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: ${HOSTING_NS}
+                key: AWS_SECRET_ACCESS_KEY
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ${HOSTING_NS}
+  namespace: ${HOSTING_NS}
+  labels:
+    environment: production
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - ${HOSTING_DOMAIN}
+  rules:
+    - host: ${HOSTING_DOMAIN}
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: ${HOSTING_NS}
+                port:
+                  number: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${HOSTING_NS}
+  namespace: ${HOSTING_NS}
+  labels:
+    environment: production
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    app: ${HOSTING_APP_LABEL}
