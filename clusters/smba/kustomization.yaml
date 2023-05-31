@@ -26,7 +26,7 @@ resources:
   - ../../apps/careers.cloudnative.nz/deployment.yaml
   - ../../apps/coder/coder.yaml
   - ../../apps/coder/coder-ingress.yaml
-  - ../../apps/coder/cluster-workspace-role.yaml
+  - ../../apps/coder/cluster-admin-role.yaml
   - ../../apps/coder/coder-helmrelease.yaml
   - ../../apps/multiplex/deployment.yaml
   # - ../../apps/minecraft/itzg-minecraft.yaml
