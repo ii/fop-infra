@@ -29,6 +29,8 @@ spec:
         type: ClusterIP
         externalTrafficPolicy: Local
       env:
+        - name: TF_LOG
+          value: "debug"
         - name: CODER_VERBOSE
           value: "true"
         - name: CODER_PROVISIONER_DAEMONS
@@ -43,8 +45,8 @@ spec:
         - name: PDNS_SERVER_URL
           value: "https://pdns.ii.nz"
         # https://registry.terraform.io/providers/vancluever/acme/latest/docs/guides/dns-providers-pdns#argument-reference
-        - name: PDNS_API_URL
-          value: "https://pdns.ii.nz"
+        # - name: PDNS_API_URL
+        #   value: "https://pdns.ii.nz"
         - name: PDNS_TTL
           value: "60"
         - name: PDNS_API_KEY
