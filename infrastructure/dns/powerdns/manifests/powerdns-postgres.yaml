@@ -12,7 +12,7 @@ spec:
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: pdns-db
+  name: powerdns-db
   namespace: powerdns
 spec:
   interval: 30m
