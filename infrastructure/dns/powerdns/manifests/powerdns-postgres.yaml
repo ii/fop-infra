@@ -8,6 +8,7 @@ spec:
   interval: 24h
   url: https://charts.bitnami.com/bitnami
 ---
+# https://artifacthub.io/packages/helm/bitnami/postgresql
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
@@ -27,5 +28,8 @@ spec:
   values:
     auth:
       existingSecret: powerdns
+      secretKeys:
+        adminPasswordKey: postgres-password
+        userPasswordKey: postgres-password
     persistence:
       size: 10Gi
