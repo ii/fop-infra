@@ -41,12 +41,15 @@ spec:
               name: coder
               key: dburl
         # Two different providers look for the URL in different places
+        # The first is for the powerdns provider:
         # https://registry.terraform.io/providers/pan-net/powerdns/1.0.0/docs#argument-reference
         - name: PDNS_SERVER_URL
           value: "https://pdns.ii.nz"
+        #
+        # The second on is for the DNS01 component of
         # https://registry.terraform.io/providers/vancluever/acme/latest/docs/guides/dns-providers-pdns#argument-reference
-        # - name: PDNS_API_URL
-        #   value: "https://pdns.ii.nz"
+        - name: PDNS_API_URL
+          value: "https://pdns.ii.nz"
         - name: PDNS_TTL
           value: "60"
         - name: PDNS_API_KEY
