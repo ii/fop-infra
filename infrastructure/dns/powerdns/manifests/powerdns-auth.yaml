@@ -48,22 +48,24 @@ spec:
         runAsGroup: 0
       #   fsGroup: 2000
       restartPolicy: Always
-      initContainers:
-        # This image ensures the pdns.sqlite3 db is created
-        - name: sqlite3
-          image: powerdns/pdns-auth-47:4.7.3
-          command:
-            [
-              "sh",
-              "-c",
-              "set -e ; set -x ; if [ ! -e /var/lib/powerdns/pdns.sqlite3 ] ; then echo Creating /var/lib/powerdns/pdns.sqlite3 ; sqlite3 /var/lib/powerdns/pdns.sqlite3 < /usr/local/share/doc/pdns/schema.sqlite3.sql ; else echo Existing /var/lib/powerdns/pdns.sqlite3 ; fi ; ls -lah /var/lib/powerdns/pdns.sqlite3",
-            ]
-          volumeMounts:
-            - mountPath: /var/lib/powerdns
-              name: powerdns-auth
+      # initContainers:
+      #   # This image ensures the pdns.sqlite3 db is created
+      #   - name: sqlite3
+      #     image: powerdns/pdns-auth-47:4.7.3
+      #     command:
+      #       [
+      #         "sh",
+      #         "-c",
+      #         "set -e ; set -x ; if [ ! -e /var/lib/powerdns/pdns.sqlite3 ] ; then echo Creating /var/lib/powerdns/pdns.sqlite3 ; sqlite3 /var/lib/powerdns/pdns.sqlite3 < /usr/local/share/doc/pdns/schema.sqlite3.sql ; else echo Existing /var/lib/powerdns/pdns.sqlite3 ; fi ; ls -lah /var/lib/powerdns/pdns.sqlite3",
+      #       ]
+      #     volumeMounts:
+      #       - mountPath: /etc/
+      #         name: powerdns-auth
       containers:
         - name: auth
           image: powerdns/pdns-auth-47:4.7.3
+          command: ["pdns_server"]
+          # command: ["sleep", "999999"]
           ports:
             - containerPort: 53
               protocol: UDP
@@ -71,54 +73,83 @@ spec:
             - containerPort: 8081
           env:
             - name: PDNS_dnsupdate
-              value: yes
+              value: "yes"
             - name: PDNS_allow_dnsupdate_from
               value: "0.0.0.0/0"
+            # - name: PDNS_launch
+            #   value: "gpgsql"
+            # - name: PDNS_gpgsql-host
+            #   value: "powerdns-db-postgresql"
+            # - name: PDNS_gpgsql-user
+            #   value: "postgres"
+            # - name: PDNS_gpgsql-password
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: powerdns
+            #       key: postgres-password
+            # - name: PDNS_gpgsql-dnssec
+            #   value: "yes"
             - name: PDNS_AUTH_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: powerdns
                   key: api_key
+            # - name: PDNS_CONF
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: powerdns
+            #       key: api_key
+            #       readOnly: true
           volumeMounts:
-            - mountPath: /var/lib/powerdns
-              name: powerdns-auth
+            - mountPath: /etc/powerdns
+              name: powerdns
+              readOnly: false
+            # Being cheeky for now, we need _api.conf
+            - mountPath: /etc/powerdns/pdns.d
+              name: powerdns
+              readOnly: false
+          #   - mountPath: /var/lib/powerdns
+          #     name: powerdns-auth
           resources: {}
       volumes:
-        - name: powerdns-auth
-          persistentVolumeClaim:
-            claimName: powerdns-auth
-          # lifeCycle:
-          # from  https://github.com/aescanero/helm-charts/blob/76fcfc3de2db248acaa73c9a1c7572c19bf96504/charts/powerdns/templates/powerdns-deployment.yaml#L36-L42
-          # postStart:
-          #   exec:
-          #     command:
-          #       - "/bin/sh"
-          #       - "-c"
-          #       - |-
-          #         a=0
-          #         while [ $a -lt 200 ]
-          #         do sleep 1
-          #           a=$[a+1]
-          #           echo 'stage: '$a
-          #           if pdnsutil list-zone ii.nz
-          #             then echo ii.nz already created
-          #             break
-          #           elif pdnsutil create-zone ii.nz
-          #             then echo CREATED
-          #           else sleep 1
-          #           fi
-          #         done
-          #         do sleep 1
-          #           a=$[a+1]
-          #           echo 'stage: '$a
-          #           if pdnsutil list-zone hackbach.nz
-          #             then echo hackbach.nz already created
-          #             break
-          #           elif pdnsutil create-zone hachbach.nz
-          #             then echo CREATED
-          #           else sleep 1
-          #           fi
-          #         done
+        - name: powerdns
+          secret:
+            secretName: powerdns
+        # - name: powerdns-auth
+        #   persistentVolumeClaim:
+        #     claimName: powerdns-auth
+        # lifeCycle:
+        # from  https://github.com/aescanero/helm-charts/blob/76fcfc3de2db248acaa73c9a1c7572c19bf96504/charts/powerdns/templates/powerdns-deployment.yaml#L36-L42
+        # postStart:
+        #   exec:
+        #     command:
+        #       - "/bin/sh"
+        #       - "-c"
+        #       - |-
+        #         a=0
+        #         while [ $a -lt 200 ]
+        #         do sleep 1
+        #           a=$[a+1]
+        #           echo 'stage: '$a
+        #           if pdnsutil list-zone ii.nz
+        #             then echo ii.nz already created
+        #             break
+        #           elif pdnsutil create-zone ii.nz
+        #             then echo CREATED
+        #           else sleep 1
+        #           fi
+        #         done
+        #         do sleep 1
+        #           a=$[a+1]
+        #           echo 'stage: '$a
+        #           if pdnsutil list-zone hackbach.nz
+        #             then echo hackbach.nz already created
+        #             break
+        #           elif pdnsutil create-zone hachbach.nz
+        #             then echo CREATED
+        #           else sleep 1
+        #           fi
+        #         done
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
