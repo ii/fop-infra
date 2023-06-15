@@ -29,10 +29,10 @@ spec:
         type: ClusterIP
         externalTrafficPolicy: Local
       env:
-        - name: TF_LOG
-          value: "debug"
-        - name: CODER_VERBOSE
-          value: "true"
+        # - name: TF_LOG
+        #   value: "debug"
+        # - name: CODER_VERBOSE
+        #   value: "true"
         - name: CODER_PROVISIONER_DAEMONS
           value: "10"
         - name: CODER_PG_CONNECTION_URL
