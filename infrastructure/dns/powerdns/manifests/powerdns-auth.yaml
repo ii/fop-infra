@@ -76,6 +76,8 @@ spec:
               value: "yes"
             - name: PDNS_allow_dnsupdate_from
               value: "0.0.0.0/0"
+            - name: PDNS_default_soa_content
+              value: "ns.ii.nz hostmaster.ii.nz 0 10800 3600 604800 3600"
             # - name: PDNS_launch
             #   value: "gpgsql"
             # - name: PDNS_gpgsql-host
