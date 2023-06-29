@@ -126,13 +126,28 @@ metadata:
 #+end_SRC
 
 * powerdns
+
 ** key secret creation
-#+begin_src tmate :window pdns-secrets
+##+begin_src tmate :window pdns-secrets
+#+begin_src shell
+. .envrc
+PDNS_CONF=$(cat ~/fop-infra/infrastructure/dns/powerdns/manifests/pdns.conf    )
+PDNS_API_CONF=$(cat ~/fop-infra/infrastructure/dns/powerdns/manifests/.pdns.d/_api.conf )
 kubectl create secret generic powerdns -n powerdns \
     --from-literal=api_key=$PDNS_API_KEY \
     --from-literal=admin_user=$PDNS_ADMIN_USER \
-  --from-literal=admin_password=$PDNS_ADMIN_PASSWORD
+    --from-literal=postgress_password=$PDNS_PG_PASSWORD \
+    --from-literal=admin_password=$PDNS_PG_PASSWORD \
+    --from-literal=pdns.conf="$PDNS_CONF" \
+    --from-literal=_api.conf="$PDNS_API_CONF" \
+    -o yaml --dry-run > ./powerdns-secret.yaml
+kubectl apply -f ./powerdns-secret.yaml
 #+end_src
+
+#+RESULTS:
+#+begin_example
+#+end_example
+
 ** configmap for python script
 https://jamesdefabia.github.io/docs/user-guide/kubectl/kubectl_create_configmap/
 #+begin_src shell :dir ../../infrastructure/dns/powerdns/manifests
@@ -311,8 +326,8 @@ secret/coder configured
 kubectl create secret generic coder-github -n coder \
     --from-literal=oauth2-id=$CODER_OAUTH2_GITHUB_CLIENT_ID \
     --from-literal=oauth2-secret=$CODER_OAUTH2_GITHUB_CLIENT_SECRET \
-    --from-literal=gitauth-id=$CODER_OAUTH2_GITHUB_CLIENT_ID \
-    --from-literal=gitauth-secret=$CODER_OAUTH2_GITHUB_CLIENT_SECRET \
+    --from-literal=gitauth-id=$CODER_GITAUTH_0_CLIENT_ID \
+    --from-literal=gitauth-secret=$CODER_GITAUTH_0_CLIENT_SECRET \
     -o yaml --dry-run > ./coder-github-secret.yaml
 kubectl apply -f ./coder-github-secret.yaml
 #+end_src
