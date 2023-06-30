@@ -133,19 +133,20 @@ metadata:
 . .envrc
 PDNS_CONF=$(cat ~/fop-infra/infrastructure/dns/powerdns/manifests/pdns.conf    )
 PDNS_API_CONF=$(cat ~/fop-infra/infrastructure/dns/powerdns/manifests/.pdns.d/_api.conf )
-kubectl create secret generic powerdns -n powerdns \
+kubectl --context=admin@fop create secret generic powerdns -n powerdns \
     --from-literal=api_key=$PDNS_API_KEY \
     --from-literal=admin_user=$PDNS_ADMIN_USER \
     --from-literal=postgress_password=$PDNS_PG_PASSWORD \
     --from-literal=admin_password=$PDNS_PG_PASSWORD \
     --from-literal=pdns.conf="$PDNS_CONF" \
     --from-literal=_api.conf="$PDNS_API_CONF" \
-    -o yaml --dry-run > ./powerdns-secret.yaml
-kubectl apply -f ./powerdns-secret.yaml
+    -o yaml --dry-run=client > ./powerdns-secret.yaml
+kubectl --context=admin@fop apply -f ./powerdns-secret.yaml
 #+end_src
 
 #+RESULTS:
 #+begin_example
+secret/powerdns configured
 #+end_example
 
 ** configmap for python script
