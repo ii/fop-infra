@@ -36,6 +36,14 @@ spec:
         namespace: ghost
       interval: 12h
   values: # https://github.com/bitnami/charts/blob/main/bitnami/ghost/values.yaml
+    extraEnvVars:
+      - name: LOG_LEVEL
+        value: DEBUG
+    image:
+      registry: docker.io
+      repository: bitnami/ghost
+      tag: 5.53.2-debian-11-r0
+      # debug: false
     ghostUsername: "chris"
     ghostEmail: "chris@mcclimans.net"
     ghostBlogTitle: "ABCS News"
