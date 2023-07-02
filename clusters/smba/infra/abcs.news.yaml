@@ -1,0 +1,30 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: abcs.news
+  namespace: ghost
+  labels:
+    environment: production
+spec:
+  ingressClassName: nginx
+  tls:
+    - secretName: "abcs.news-tls"
+      hosts:
+        - "abcs.news"
+  rules:
+    - host: "abcs.news"
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: ghost
+                port:
+                  number: 80
+status:
+  loadBalancer:
+    ingress:
+      # Let's use the same IP as everyone else
+      - ip: 123.253.177.110
