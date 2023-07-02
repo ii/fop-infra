@@ -61,7 +61,8 @@ spec:
     persistence:
       enabled: true
       # https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
-      accessMode: "ReadWriteMany"
+      accessModes:
+        - "ReadWriteMany"
       size: 10Gi
     mysql:
       auth:
@@ -70,7 +71,8 @@ spec:
         persistence:
           enabled: true
           size: 10Gi
-          accessMode: "ReadWriteMany"
+          # accessModes:
+          #   - "ReadWriteMany"
     ingress:
       enabled: false
       hostname: "abcs.news"
