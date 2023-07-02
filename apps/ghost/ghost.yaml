@@ -56,8 +56,7 @@ spec:
     smtpHost: "smtp.fastmail.com"
     smtpPort: "465"
     smtpUser: "chris@mcclimans.net"
-    smtpPassword: "mqmwgga8n2sk3thf"
-    smtpProtocol: "tls"
+    smtpProtocol: "ssl"
     # smtpExistingSecret: "ghost-passwords"
     # ghostHost: "abcs.news"
     persistence:
