@@ -60,6 +60,8 @@ spec:
     # ghostHost: "abcs.news"
     persistence:
       enabled: true
+      # https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
+      accessMode: "ReadWriteMany"
       size: 10Gi
     mysql:
       auth:
