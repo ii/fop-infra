@@ -251,6 +251,16 @@ kubectl -n powerdns exec deployment/auth -c auth -- pdnsutil activate-tsig-key c
 #+begin_example
 Enabled TSIG key ii for cloudnative.nz
 #+end_example
+
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+kubectl -n powerdns exec deployment/auth -c auth -- pdnsutil activate-tsig-key abcs.news ii master
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Enabled TSIG key ii for abcs.news
+#+end_example
+
 ** list-tsig-keys
 #+begin_src shell
  kubectl -n powerdns exec -it deployment/auth -- pdnsutil list-tsig-keys
@@ -258,7 +268,7 @@ Enabled TSIG key ii for cloudnative.nz
 
 #+begin_src shell :results silent
  TSIG_KEY=$(kubectl -n powerdns exec deployment/auth -c auth -- pdnsutil list-tsig-keys  | grep ii\. | awk '{print $3}')
- echo $TSIG_KEY
+ echo -n $TSIG_KEY
 #+end_src
 
 ** get-meta
@@ -291,16 +301,75 @@ kubectl -n powerdns exec -it deployment/auth -- pdnsutil set-meta cloudnative.nz
 #+begin_example
 Set 'cloudnative.nz' meta TSIG-ALLOW-DNSUPDATE = ii
 #+end_example
-
-** create secret
-#+begin_src shell
-kubectl -n cert-manager create secret generic tsig-powerdns --from-literal=powerdns="$(kubectl -n powerdns exec -c auth deployment/auth -- pdnsutil list-tsig-keys | grep pair | awk '{print $3}')"
+*** abcs.news
+**** create zone
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+kubectl -n powerdns exec deployment/auth -c auth -- pdnsutil create-zone abcs.news ns.ii.nz
+#+end_src
+**** Add second ns
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+kubectl -n powerdns exec deployment/auth -c auth -- pdnsutil add-record abcs.news @ NS ns2.ii.nz
 #+end_src
 
 #+RESULTS:
 #+begin_example
-secret/tsig-powerdns created
+New rrset:
+abcs.news. 3600 IN NS ns.ii.nz
+abcs.news. 3600 IN NS ns2.ii.nz
 #+end_example
+
+**** Activate TSIG-KEY
+#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n:\n"
+kubectl -n powerdns exec deployment/auth -c auth -- pdnsutil activate-tsig-key abcs.news ii master
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Enabled TSIG key ii for abcs.news
+#+end_example
+**** Activate TSIG-ALLOW_DNSUPDATE
+#+begin_src shell
+kubectl -n powerdns exec -it deployment/auth -- pdnsutil set-meta abcs.news TSIG-ALLOW-DNSUPDATE ii
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Set 'abcs.news' meta TSIG-ALLOW-DNSUPDATE = ii
+#+end_example
+
+#+begin_src shell
+kubectl -n powerdns exec -it deployment/auth -- pdnsutil set-meta abcs.news ALLOW-DNSUPDATE-FROM 0.0.0.0/0
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Set 'abcs.news' meta ALLOW-DNSUPDATE-FROM = 0.0.0.0/0
+#+end_example
+#+begin_src shell
+kubectl -n powerdns exec -it deployment/auth -- pdnsutil get-meta abcs.news
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Metadata for 'abcs.news'
+ALLOW-DNSUPDATE-FROM = 0.0.0.0/0
+SOA-EDIT-API = DEFAULT
+TSIG-ALLOW-AXFR = ii
+TSIG-ALLOW-DNSUPDATE = ii
+#+end_example
+
+** create secret
+#+begin_src shell :results silent
+TSIG_KEY=$(kubectl -n powerdns exec deployment/auth -c auth -- pdnsutil list-tsig-keys  | grep ii\. | awk '{print $3}')
+kubectl -n cert-manager \
+    create secret generic tsig-powerdns \
+    --from-literal=powerdns="$TSIG_KEY" \
+    --dry-run=client -o yaml > tsig-powerdns-secret.yaml
+kubectl -n cert-manager delete secret tsig-powerdns
+echo $TSIG_KEY
+kubectl apply -f tsig-powerdns-secret.yaml
+kubectl -n cert-manager get secret tsig-powerdns -o jsonpath='{.data.powerdns}' | base64 -d
+#+end_src
 
 * deploy cert-manager
 * deploy coder.ii.nz
@@ -363,7 +432,7 @@ fullchain.pem
 privkey.pem
 #+end_example
 
-#+begin_src shell :prologue "(\n" :epilogue "\n) 2>&1\n\:\n" :results none
+#+begin_src shell :proKEYlogue "(\n" :epilogue "\n) 2>&1\n\:\n" :results none
 kubectl create secret tls cloudnative.nz-tls \
     --namespace coder \
     --key certbot/live/cloudnative.nz/privkey.pem \
@@ -378,6 +447,55 @@ kubectl apply -f cloudnative.nz-tls-secret.yaml
 #+RESULTS:
 #+begin_example
 secret/cloudnative.nz-tls created
+#+end_example
+
+* Add certificate for *.abcs.news, abcs.news
+#+begin_src tmate :window foo
+certbot certonly --server https://acme-v02.api.letsencrypt.org/directory  --manual --preferred-challenges dns -d '*.abcs.news' -d abcs.news --work-dir=$PWD/certbot --logs-dir=$PWD/certbot --config-dir=$PWD/certbot
+#+end_src
+Use https://powerdns.ii.nz/domain/abcs.news to create your TXT record.
+
+Then verify your TXT record is available to the internet peoples: https://toolbox.googleapps.com/apps/dig/#TXT/_acme-challenge.abcs.news
+
+You should have some files under certbot/live/abcs.news
+#+begin_src shell
+ls certbot/live/abcs.news
+#+end_src
+
+#+RESULTS:
+#+begin_example
+README
+cert.pem
+chain.pem
+fullchain.pem
+privkey.pem
+#+end_example
+
+https://github.com/bitnami/charts/blob/main/bitnami/mysql/values.yaml#L138-L141
+#+begin_src shell :proKEYlogue "(\n" :epilogue "\n) 2>&1\n\:\n" :results none
+kubectl create secret generic ghost-passwords -n ghost \
+    --from-literal=ghost-password=$GHOST_PASSWORD \
+    --from-literal=smtp-password=$GHOST_SMTP_PASSWORD \
+    --from-literal=mysql-root-password=$GHOST_MYSQL_ROOT_PASSWORD \
+    --from-literal=mysql-password=$GHOST_MYSQL_ROOT_PASSWORD \
+    -o yaml --dry-run=client > ./ghost-passwords.yaml
+kubectl apply -f ./ghost-passwords.yaml
+#+end_src
+#+begin_src shell :proKEYlogue "(\n" :epilogue "\n) 2>&1\n\:\n" :results none
+kubectl create secret tls abcs.news-tls \
+    --namespace ghost \
+    --key certbot/live/abcs.news/privkey.pem \
+    --cert certbot/live/abcs.news/fullchain.pem \
+    --dry-run=client -o yaml > abcs.news-tls-secret.yaml
+#+end_src
+
+#+begin_src shell
+kubectl apply -f abcs.news-tls-secret.yaml
+#+end_src
+
+#+RESULTS:
+#+begin_example
+secret/abcs.news-tls created
 #+end_example
 
 * Setup ceph.ii.nz
@@ -882,7 +1000,7 @@ cephblockpools.ceph.rook.io
 cephbucketnotifications.ceph.rook.io
 cephbuckettopics.ceph.rook.io
 cephclients.ceph.rook.io
-cephclusters.ceph.rook.io
+cephclusters.ceph.
 cephfilesystemmirrors.ceph.rook.io
 cephfilesystems.ceph.rook.io
 cephfilesystemsubvolumegroups.ceph.rook.io
