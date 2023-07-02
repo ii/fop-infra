@@ -43,13 +43,12 @@ spec:
     ghostHost: "abcs.news"
     ghostPath: "/"
     existingSecret: "ghost-passwords"
-    smtpHost: ""
-    smtpPort: ""
-    smtpUser: ""
-    smtpPassword: ""
-    smtpService: ""
-    smtpProtocol: ""
-    smtpExistingSecret: "ghost-passwords"
+    smtpHost: "smtp.fastmail.com"
+    smtpPort: "465"
+    smtpUser: "chris@mcclimans.net"
+    smtpPassword: "tkzfxxbae55wnpx2"
+    smtpProtocol: "tls"
+    # smtpExistingSecret: "ghost-passwords"
     # ghostHost: "abcs.news"
     persistence:
       enabled: true
@@ -65,8 +64,7 @@ spec:
       enabled: false
       hostname: "abcs.news"
       tls: false
-      extraHosts:
-        "ghost.abcs.news"
+      extraHosts: "ghost.abcs.news"
       ingressClassName: "nginx"
       secrets: "abcs.news-tls"
     service:
