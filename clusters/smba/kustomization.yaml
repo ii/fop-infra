@@ -25,6 +25,7 @@ resources:
   - ../../apps/ii.nz/ii.nz.yaml
   - ../../apps/ii.nz/matey.ii.nz.yaml
   - ../../apps/careers.cloudnative.nz/deployment.yaml
+  - ../../apps/ghost/ghost.yaml
   - ../../apps/coder/coder.yaml
   - ../../apps/coder/coder-ingress.yaml
   - ../../apps/coder/cluster-admin-role.yaml
