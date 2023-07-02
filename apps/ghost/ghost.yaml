@@ -64,7 +64,7 @@ spec:
     ingress:
       enabled: true
       hostname: "abcs.news"
-      tls: true
+      tls: false
       extraHosts:
         "ghost.abcs.news"
       ingressClassName: "nginx"
