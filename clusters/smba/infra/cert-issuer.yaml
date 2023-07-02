@@ -24,7 +24,11 @@ spec:
             tsigSecretSecretRef:
               name: tsig-powerdns
               key: powerdns
-
+        # selector:
+        #   dnsZones:
+        #     - "abcs.news"
+        #     - "cloudnative.nz"
+        #     - "ii.nz"
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate

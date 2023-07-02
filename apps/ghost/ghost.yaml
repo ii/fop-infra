@@ -1,0 +1,73 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ghost
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: ghost
+  namespace: ghost
+spec:
+  interval: 24h
+  url: https://charts.bitnami.com/bitnami
+# TODO: Figure out how to reference a specific chart under OCI
+# spec:
+#   interval: 24h
+#   type: oci
+#   provider: generic
+#   url: oci://registry-1.docker.io/bitnamicharts/ghost
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: ghost
+  namespace: ghost
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: "ghost"
+      version: "19.3.21" # 5.53.3" # Current as of Jul 2, 2023
+      sourceRef:
+        kind: HelmRepository
+        name: ghost
+        namespace: ghost
+      interval: 12h
+  values: # https://github.com/bitnami/charts/blob/main/bitnami/ghost/values.yaml
+    ghostUsername: "chris"
+    ghostEmail: "chris@mcclimans.net"
+    ghostBlogTitle: "ABCS News"
+    ghostEnableHttps: true
+    ghostHost: "abcs.news"
+    ghostPath: "/"
+    existingSecret: "ghost-passwords"
+    smtpHost: ""
+    smtpPort: ""
+    smtpUser: ""
+    smtpPassword: ""
+    smtpService: ""
+    smtpProtocol: ""
+    smtpExistingSecret: "ghost-passwords"
+    # ghostHost: "abcs.news"
+    persistence:
+      enabled: true
+      size: 10Gi
+    mysql:
+      auth:
+        existingSecret: "ghost-passwords"
+      primary:
+        persistence:
+          enabled: true
+          size: 10Gi
+    ingress:
+      enabled: true
+      hostname: "abcs.news"
+      tls: true
+      extraHosts:
+        "ghost.abcs.news"
+      ingressClassName: "nginx"
+      secrets: "abcs-news-tls"
+    service:
+      type: ClusterIP
