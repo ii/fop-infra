@@ -62,7 +62,7 @@ spec:
           enabled: true
           size: 10Gi
     ingress:
-      enabled: true
+      enabled: false
       hostname: "abcs.news"
       tls: false
       extraHosts:
