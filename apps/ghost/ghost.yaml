@@ -39,7 +39,7 @@ spec:
     ghostUsername: "chris"
     ghostEmail: "chris@mcclimans.net"
     ghostBlogTitle: "ABCS News"
-    ghostEnableHttps: true
+    ghostEnableHttps: false
     ghostHost: "abcs.news"
     ghostPath: "/"
     existingSecret: "ghost-passwords"
