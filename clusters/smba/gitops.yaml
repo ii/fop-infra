@@ -43,6 +43,7 @@ spec:
       create: true
     ingress:
       enabled: true
+      className: nginx
       hosts:
         - host: gitops.cloudnative.nz
           paths:
