@@ -3,15 +3,15 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: ghost
----
-apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: HelmRepository
-metadata:
-  name: ghost
-  namespace: ghost
-spec:
-  interval: 24h
-  url: https://charts.bitnami.com/bitnami
+# ---
+# apiVersion: source.toolkit.fluxcd.io/v1beta2
+# kind: HelmRepository
+# metadata:
+#   name: ghost
+#   namespace: ghost
+# spec:
+#   interval: 24h
+#   url: https://charts.bitnami.com/bitnami
 # TODO: Figure out how to reference a specific chart under OCI
 # spec:
 #   interval: 24h
@@ -36,8 +36,8 @@ spec:
       version: "19.3.22" # 5.54.0" # Current as of Jul 12, 2023
       sourceRef:
         kind: HelmRepository
-        name: ghost
-        namespace: ghost
+        name: bitnami
+        namespace: flux-system
       interval: 12h
   values: # https://github.com/bitnami/charts/blob/main/bitnami/ghost/values.yaml
     global:

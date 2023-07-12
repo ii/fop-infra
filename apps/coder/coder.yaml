@@ -5,15 +5,15 @@ metadata:
   name: coder
   labels:
     toolkit.fluxcd.io/tenant: sre-team
----
-apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: HelmRepository
-metadata:
-  name: bitnami
-  namespace: coder
-spec:
-  interval: 24h
-  url: https://charts.bitnami.com/bitnami
+# ---
+# apiVersion: source.toolkit.fluxcd.io/v1beta2
+# kind: HelmRepository
+# metadata:
+#   name: bitnami
+#   namespace: coder
+# spec:
+#   interval: 24h
+#   url: https://charts.bitnami.com/bitnami
 ---
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: HelmRepository
@@ -38,7 +38,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: bitnami
-        namespace: coder
+        namespace: flux-system
       interval: 12h
   values:
     auth:
