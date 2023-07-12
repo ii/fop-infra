@@ -18,6 +18,7 @@ kind: Kustomization
 #     name: flux-system
 #
 resources:
+  - ./bitnami-helmrepo.yaml
   - ./infra.yaml
   - ./gitops.yaml
   - ../../infrastructure/loadbalancer/metallb/metallb.yaml
