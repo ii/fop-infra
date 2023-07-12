@@ -29,7 +29,7 @@ spec:
   chart:
     spec:
       chart: "ghost"
-      version: "19.3.21" # 5.53.3" # Current as of Jul 2, 2023
+      version: "19.3.23" # 5.54.0" # Current as of Jul 12, 2023
       sourceRef:
         kind: HelmRepository
         name: ghost
