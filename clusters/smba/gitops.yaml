@@ -3,7 +3,8 @@ apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: HelmRepository
 metadata:
   annotations:
-    metadata.weave.works/description: This is the source location for the Weave GitOps
+    metadata.weave.works/description:
+      This is the source location for the Weave GitOps
       Dashboard's helm chart.
   labels:
     app.kubernetes.io/component: ui
@@ -21,16 +22,49 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   annotations:
-    metadata.weave.works/description: This is the Weave GitOps Dashboard.  It provides
+    metadata.weave.works/description:
+      This is the Weave GitOps Dashboard.  It provides
       a simple way to get insights into your GitOps workloads.
   name: gitops
   namespace: flux-system
 spec:
+  interval: 1h0m0s
   chart:
     spec:
       chart: weave-gitops
       sourceRef:
         kind: HelmRepository
         name: gitops
-  interval: 1h0m0s
-
+  values: # https://docs.gitops.weave.works/docs/references/helm-reference/
+    adminUser:
+      username: "admin"
+      # PASSWORD="AdminPassword" && echo -n $PASSWORD | gitops get bcrypt-hash
+      passwordHash: "$2a$10$gT11Ut1hj05BPZM/T1PA3OWPI2h5TY1AYo9AJLIAd7MWuMMcxYjN."
+      create: true
+    ingress:
+      enabled: true
+      hosts:
+        - host: gitops.cloudnative.nz
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls:
+        - secretName: wildcard-tls
+          hosts:
+            - gitops.cloudnative.nz
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    # Should the 'oidc-auth' secret be created. For a detailed
+    # explanation of these attributes please see our documentation:
+    # https://docs.gitops.weave.works/docs/configuration/securing-access-to-the-dashboard/#login-via-an-oidc-provider
+    oidcSecret:
+      create: false
+      # clientID:
+      # clientSecret:
+      # issuerURL:
+      # redirectURL:
