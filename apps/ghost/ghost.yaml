@@ -25,6 +25,10 @@ metadata:
   name: ghost
   namespace: ghost
 spec:
+  install:
+    disableWait: true
+  upgrade:
+    disableWait: true
   interval: 30m
   chart:
     spec:

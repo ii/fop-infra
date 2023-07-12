@@ -52,11 +52,6 @@ resources:
   # - ../../infrastructure/storage/longhorn/longhorn-ingress.yaml
   # Infra that needs CRDs
   #- ./metallb-config.yaml
-spec:
-  install:
-    disableWait: true
-  upgrade:
-    disableWait: true
   patches:
     - target:
         kind: HelmRelease
