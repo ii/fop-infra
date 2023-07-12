@@ -54,11 +54,7 @@ resources:
   #- ./metallb-config.yaml
 spec:
   patches:
-    - target:
-        kind: HelmRelease
-        name: ghost
-        namespace: ghost
-      patch: |
+    - patch: |
         - path: /spec/values/extraEnvVars
           op: add
           value:
@@ -69,6 +65,10 @@ spec:
           value:
             name: "SETMYVAR"
             value: "MYVALUE"
+      target:
+        kind: HelmRelease
+        name: ghost
+        namespace: ghost
   # How GHOST_ENABLE_HTTPS is used by the container
   # From https://github.com/bitnami/containers/blob/main/bitnami/ghost/5/debian-11/rootfs/opt/bitnami/scripts/libghost.sh#L437-L444
   # if is_boolean_yes "$GHOST_ENABLE_HTTPS"; then
@@ -85,7 +85,6 @@ spec:
   # Fix an existing deployment via:
   # kubectl -n ghost exec deployment/ghost -- cat /bitnami/ghost/config.production.json
   # kubectl -n ghost exec deployment/ghost -- sed -i s/http:/https:/ /bitnami/ghost/config.production.json
-
 #         # - path: /spec/containers/0/env
 #         #   op: add
 #         #   value:
