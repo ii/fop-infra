@@ -45,14 +45,14 @@ spec:
       enabled: true
       className: nginx
       hosts:
-        - host: gitops.cloudnative.nz
+        - host: gitops.ii.nz
           paths:
             - path: /
               pathType: ImplementationSpecific
       tls:
         - secretName: wildcard-tls
           hosts:
-            - gitops.cloudnative.nz
+            - gitops.ii.nz
     resources:
       limits:
         cpu: 100m
