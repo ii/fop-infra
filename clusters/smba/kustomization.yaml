@@ -12,6 +12,7 @@ kind: Kustomization
 #     name: flux-system
 resources:
   - ./infra.yaml
+  - ./gitops.yaml
   - ../../infrastructure/loadbalancer/metallb/metallb.yaml
   - ../../infrastructure/dns/powerdns/manifests/powerdns-ns.yaml
   - ../../infrastructure/dns/powerdns/manifests/powerdns-admin.yaml
@@ -71,9 +72,14 @@ spec:
         kind: Deployment
         name: ghost
         namespace: ghost
-      patch: |-
-        path: /spec/containers/0/env
-        op: add
-        value:
-          name: "GHOST_ENABLE_HTTPS"
-          value: "yes"
+      patch: |
+        - path: /spec/containers/0/env
+          op: add
+          value:
+            name: "GHOST_ENABLE_HTTPS"
+            value: "yes"
+        # - path: /spec/containers/0/env
+        #   op: add
+        #   value:
+        #     name: "GHOST_ENABLE_HTTPS"
+        #     value: "yes"
