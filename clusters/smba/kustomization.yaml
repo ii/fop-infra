@@ -11,6 +11,7 @@ kind: Kustomization
 #   sourceRef:
 #     kind: GitRepository
 #     name: flux-system
+#
 resources:
   - ./infra.yaml
   - ./gitops.yaml
@@ -51,8 +52,27 @@ resources:
   # - ../../infrastructure/storage/longhorn/longhorn-ingress.yaml
   # Infra that needs CRDs
   #- ./metallb-config.yaml
-# spec:
-patches:
+spec:
+  install:
+    disableWait: true
+  upgrade:
+    disableWait: true
+  patches:
+    - target:
+        kind: HelmRelease
+        name: ghost
+        namespace: ghost
+      patch: |
+        - path: /spec/values/extraEnvVars
+          op: add
+          value:
+            name: "GHOST_ENABLE_HTTPS"
+            value: "yes"
+        - path: /spec/values/extraEnvVars
+          op: add
+          value:
+            name: "SETMYVAR"
+            value: "MYVALUE"
   # How GHOST_ENABLE_HTTPS is used by the container
   # From https://github.com/bitnami/containers/blob/main/bitnami/ghost/5/debian-11/rootfs/opt/bitnami/scripts/libghost.sh#L437-L444
   # if is_boolean_yes "$GHOST_ENABLE_HTTPS"; then
@@ -69,21 +89,6 @@ patches:
   # Fix an existing deployment via:
   # kubectl -n ghost exec deployment/ghost -- cat /bitnami/ghost/config.production.json
   # kubectl -n ghost exec deployment/ghost -- sed -i s/http:/https:/ /bitnami/ghost/config.production.json
-  - target:
-      kind: HelmRelease
-      name: ghost
-      namespace: ghost
-    patch: |
-      - path: /spec/values/extraEnvVars
-        op: add
-        value:
-          name: "GHOST_ENABLE_HTTPS"
-          value: "yes"
-      - path: /spec/values/extraEnvVars
-        op: add
-        value:
-          name: "SETMYVAR"
-          value: "MYVALUE"
 
 #         # - path: /spec/containers/0/env
 #         #   op: add
