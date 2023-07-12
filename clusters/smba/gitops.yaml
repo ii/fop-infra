@@ -55,11 +55,11 @@ spec:
             - gitops.ii.nz
     resources:
       limits:
-        cpu: 100m
-        memory: 128Mi
+        cpu: 1000m
+        memory: 256Mi
       requests:
-        cpu: 100m
-        memory: 128Mi
+        cpu: 1000m
+        memory: 256Mi
     # Should the 'oidc-auth' secret be created. For a detailed
     # explanation of these attributes please see our documentation:
     # https://docs.gitops.weave.works/docs/configuration/securing-access-to-the-dashboard/#login-via-an-oidc-provider
