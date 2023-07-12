@@ -69,15 +69,20 @@ spec:
     # kubectl -n ghost exec deployment/ghost -- cat /bitnami/ghost/config.production.json
     # kubectl -n ghost exec deployment/ghost -- sed -i s/http:/https:/ /bitnami/ghost/config.production.json
     - target:
-        kind: Deployment
+        kind: HelmRelease
         name: ghost
         namespace: ghost
       patch: |
-        - path: /spec/containers/0/env
+        - path: /spec/values/extraEnvVars
           op: add
           value:
             name: "GHOST_ENABLE_HTTPS"
             value: "yes"
+        - path: /spec/values/extraEnvVars
+          op: add
+          value:
+            name: "SETMYVAR"
+            value: "MYVALUE"
         # - path: /spec/containers/0/env
         #   op: add
         #   value:
