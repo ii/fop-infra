@@ -70,8 +70,8 @@ spec:
             - "--disable-syslog=true"
             - "--loglevel=5"
             - "--query-logging=yes"
-            - "--webserver-loglevel=details"
-            - "--log-dns-details=details"
+            - "--webserver-loglevel=detailed"
+            - "--log-dns-details=yes"
           ports:
             - containerPort: 53
               protocol: UDP
