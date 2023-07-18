@@ -67,7 +67,7 @@ spec:
           command: ["pdns_server"]
           # command: ["sleep", "999999"]
           args:
-            - "--disable-syslog"
+            - "--disable-syslog=true"
           ports:
             - containerPort: 53
               protocol: UDP
@@ -89,7 +89,7 @@ spec:
             - name: PDNS_webserver_loglevel
               value: "details"
             - name: PDNS_disable_syslog
-              value: "details"
+              value: "true"
             # - name: PDNS_launch
             #   value: "gpgsql"
             # - name: PDNS_gpgsql-host
