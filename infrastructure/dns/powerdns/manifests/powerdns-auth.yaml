@@ -66,6 +66,8 @@ spec:
           image: powerdns/pdns-auth-47:4.7.3
           command: ["pdns_server"]
           # command: ["sleep", "999999"]
+          args:
+            - "--disable-syslog"
           ports:
             - containerPort: 53
               protocol: UDP
@@ -85,6 +87,8 @@ spec:
             - name: PDNS_query_logging
               value: "yes"
             - name: PDNS_webserver_loglevel
+              value: "details"
+            - name: PDNS_disable_syslog
               value: "details"
             # - name: PDNS_launch
             #   value: "gpgsql"
