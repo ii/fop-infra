@@ -78,6 +78,14 @@ spec:
               value: "0.0.0.0/0"
             - name: PDNS_default_soa_content
               value: "ns.ii.nz hostmaster.ii.nz 0 10800 3600 604800 3600"
+            - name: PDNS_log_dns_details
+              value: "yes"
+            - name: PDNS_loglevel
+              value: "5"
+            - name: PDNS_query_logging
+              value: "yes"
+            - name: PDNS_webserver_loglevel
+              value: "details"
             # - name: PDNS_launch
             #   value: "gpgsql"
             # - name: PDNS_gpgsql-host
