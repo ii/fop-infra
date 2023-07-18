@@ -68,6 +68,10 @@ spec:
           # command: ["sleep", "999999"]
           args:
             - "--disable-syslog=true"
+            - "--loglevel=5"
+            - "--query-logging=yes"
+            - "--webserver-loglevel=details"
+            - "--log-dns-details=details"
           ports:
             - containerPort: 53
               protocol: UDP
