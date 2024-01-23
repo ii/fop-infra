@@ -57,6 +57,7 @@ spec:
   tls:
     - hosts:
         - pdns.ii.nz
+      secretName: "pdns"
 status:
   loadBalancer:
     ingress:

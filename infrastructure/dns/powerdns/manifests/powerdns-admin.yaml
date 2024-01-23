@@ -136,6 +136,7 @@ spec:
   tls:
     - hosts:
         - "powerdns.ii.nz"
+      secretName: "powerdns"
   rules:
     - host: "powerdns.ii.nz"
       http:
