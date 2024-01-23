@@ -129,7 +129,7 @@ metadata:
   labels:
     environment: production
   annotations:
-    cert-manager.io/cluster-issuer: ii-nz-letsencrypt-prod
+    cert-manager.io/cluster-issuer: letsencrypt-http01
     # kubernetes.io/ingress.class: nginx
 spec:
   ingressClassName: nginx

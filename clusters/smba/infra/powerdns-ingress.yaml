@@ -39,6 +39,8 @@ metadata:
     app: powerdns
   name: pdns-ii-nz
   namespace: powerdns
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-http01
 spec:
   ingressClassName: nginx
   rules:
