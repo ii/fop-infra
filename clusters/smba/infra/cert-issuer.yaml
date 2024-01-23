@@ -44,29 +44,3 @@ spec:
     name: letsencrypt
     kind: ClusterIssuer
     group: cert-manager.io
----
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
-metadata:
-  name: letsencrypt-http01
-  namespace: cert-manager
-spec:
-  acme:
-    # The ACME server URL
-    server: https://acme-v02.api.letsencrypt.org/directory
-
-    # Email address used for ACME registration
-    email: acme@ii.coop
-
-    # Name of a secret used to store the ACME account private key
-    privateKeySecretRef:
-      name: letsencrypt
-    # https://cert-manager.io/docs/reference/api-docs/#acme.cert-manager.io/v1.ACMEIssuerDNS01ProviderRFC2136
-    # https://cert-manager.io/docs/reference/api-docs/#acme.cert-manager.io/v1.ACMEIssuerDNS01ProviderWebhook
-    # pdnsutil activate-tsig-key abcs.news sharing.io master # for each domain
-    solvers:
-      # https://cert-manager.io/docs/configuration/acme/http01/
-      # https://cert-manager.io/docs/configuration/acme/http01/#ingresstemplate
-      - http01:
-          ingress:
-            ingressClassName: nginx
